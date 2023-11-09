@@ -12,7 +12,7 @@ variable DT equal 0.0
 variable V equal 10.0
 #
 # HATCH: hatch spacing
-variable HATCH equal 20
+variable HATCH equal 12.5
 #
 # OUT_DT: time interval controlling output frequency
 variable OUT_DT equal 2.0
@@ -22,49 +22,10 @@ variable OUT universe build_pattern.st
 #
 # SEED: random integer
 variable SEED equal 17133
-
 #
 #
-# SPOT_WIDTH: width of the melt pool
-variable SPOT_WIDTH equal 15#SPOT_WIDTH
-#
-# MELT_TAIL_LENGTH: length of tail from meltpool midpoint
-variable MELT_TAIL_LENGTH equal 5
-#
-# MELT_DEPTH: how many lattice sites deep the melt pool is
-variable MELT_DEPTH equal 15
-#
-# CAP_HEIGHT: height of the cap leading the melt pool
-variable CAP_HEIGHT equal 4
-#
-# HAZ: surrounding melt pool (must larger than SPOT_WIDTH and MELT_DEPTH)
-variable HAZ equal 25
-#
-# TAIL_HAZ: length of HAZ trailing meltpool (must be larger than MELT_TAIL_LENGTH)
-variable TAIL_HAZ equal 45
-#
-# DEPTH_HAZ:  HAZ depth below meltpool (must be larger than MELT_DEPTH)
-variable DEPTH_HAZ equal 22
-#
-# CAP_HAZ: HAZ infront of melt pool (must be larger than CAP_HEIGHT)
-variable CAP_HAZ equal 6
-#
-# BOX_XY: Box region size for x and y values (we want square shape each layer, so x=y)
-variable BOX_XY equal 56
-#
-# BOX_Z: Box region size for z axis (height)
-variable BOX_Z equal 56
-#
-# THICKNESS: layer thickness (BOX_Z = THICKNESS * NUM_LAYERS)
-variable THICKNESS equal 14#THICKNESS
-#
-# NUM_LAYERS: number of layers (NUM_LAYERS = BOX_Z / THICKNESS)
-variable NUM_LAYERS equal ${BOX_Z}/${THICKNESS}
-
-
 seed		 ${SEED}
-#app_style	 am/ellipsoid		${Q} 15 35 15 4	25 45 22 6 0.1
-app_style	 am/ellipsoid		${Q} ${SPOT_WIDTH} ${MELT_TAIL_LENGTH} ${MELT_DEPTH} ${CAP_HEIGHT} ${HAZ} ${TAIL_HAZ} ${DEPTH_HAZ} ${CAP_HAZ} 0.1
+app_style	 am/ellipsoid		${Q} 15 35 15 4	25 45 22 6 0.1
 
 # |————————————————————————————————————————
 # | nspins		= atoi(arg[1])
@@ -87,8 +48,7 @@ app_style	 am/ellipsoid		${Q} ${SPOT_WIDTH} ${MELT_TAIL_LENGTH} ${MELT_DEPTH} ${
 #———————————————————————————————————————————
 dimension	 3
 lattice	 	 sc/26n 1.0
-#region		 box block 0 56 0 56 0 56
-region		 box block 0 ${BOX_XY} 0 ${BOX_XY} 0 ${BOX_Z}
+region		 box block 0 56 0 56 0 56
 
 boundary 	 n n n
 
@@ -111,13 +71,11 @@ set		 d1 value 0.0
 am pass 1 dir X speed ${V} hatch ${HATCH}
 am pass 2 dir Y speed ${V} hatch ${HATCH}
 
-#am cartesian_layer  1 start LL pass_id 1 thickness ${THICKNESS} offset -40.0 0.0
-#am cartesian_layer  2 start UL pass_id 2 thickness ${THICKNESS} offset 0.0 40.0
-am cartesian_layer  1 start LL pass_id 1 thickness ${THICKNESS} offset 0.0 0.0
-am cartesian_layer  2 start UL pass_id 2 thickness ${THICKNESS} offset 0.0 0.0
+am cartesian_layer  1 start LL pass_id 1 thickness 14 offset -40.0 0.0
+am cartesian_layer  2 start UL pass_id 2 thickness 14 offset 0.0 40.0
 
 # Starts at top of layer 1
-am build start ${THICKNESS} num_layers ${NUM_LAYERS}
+am build start 14 num_layers 4
 #———————————————————————————————————————————
 
 # Setup the solver type and parameters. Must use a "sweep" style solver
@@ -132,8 +90,7 @@ temperature	 ${T}
 diag_style   energy
 stats            1.0
 
-dump         1 text 1 3D_AM_mpWidth_${SPOT_WIDTH}_thickness_${THICKNESS}.dump
-#dump         dump.id.1 stitch ${OUT_DT} ${OUT} site
+dump         dump.id.1 stitch ${OUT_DT} ${OUT} site
 
 # App will automatically determine duration of run.
 run 1.0
