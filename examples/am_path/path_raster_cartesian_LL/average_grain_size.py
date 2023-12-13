@@ -137,7 +137,7 @@ plt.show()
 
 #plot histogram
 #plt.hist(regions_list, bins=15, ec='black')
-n, bins, cts = plt.hist(regions_list, bins=15, ec='black')
+n, bins, cts = plt.hist(regions_list, bins=15,  range=(0,100),  ec='black')
 plt.bar_label(cts) # Add numbers to the top of each bar
 plt.xlabel("Grain Size")
 plt.ylabel("Number of Grain Regions")
