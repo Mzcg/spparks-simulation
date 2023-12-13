@@ -12,10 +12,12 @@ variable HAZ equal               25
 variable ABS_TOL equal           0.02
 variable ALPHA   equal           0.75
 variable BETA equal				0.50
-variable XY_SIZE    equal          50
+variable XY_SIZE    equal          256
 variable Z_SIZE    equal          48
 variable THICKNESS    equal          6
 variable NUMBER_OF_LAYERS    equal          ${Z_SIZE}/${THICKNESS}
+variable SPEED equal             45
+variable HATCH equal             15
 
 
 
@@ -43,8 +45,8 @@ set		 d1 value 0.0
 
 #Define an additive scan pattern
 #———————————————————————————————————————————
-am pass 1 dir X speed 9 hatch 9
-am pass 2 dir Y speed 9 hatch 9
+am pass 1 dir X speed ${SPEED} hatch ${HATCH}
+am pass 2 dir Y speed ${SPEED} hatch ${HATCH}
 
 
 #am cartesian_layer 1 start LL pass_id 1 thickness ${THICKNESS} offset -40. 0.0
@@ -69,8 +71,8 @@ temperature	 ${T}
 diag_style   cluster stats no delt 1.0
 stats            1.0
 
-dump         1 text 20.0 dump.3D_AM_XY_${XY_SIZE}_TimeEvalation_t_0.5_.*
+dump         1 text 40.0 dump.3D_AM_XY_${XY_SIZE}_speed_${SPEED}_hatch_${HATCH}.*
 #dump         dump.id stitch ${DT} ${OUT} site   # 1.0 does not matter
 #dump_modify dump.id tol ${ABS_TOL}
 
-run              0.5
+run              1.0

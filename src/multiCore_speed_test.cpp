@@ -1,6 +1,6 @@
 // Programme to test the multi-processor speed up gain, if any on the host system
 // compile the code in the following way:
-// mpic++ -o multiCore_speed_test multiCore_speed_test.cpp
+    // mpic++ -o multiCore_speed_test multiCore_speed_test.cpp
 // run using : mpirun -np 16 ./multiCore_speed_test
 
 
