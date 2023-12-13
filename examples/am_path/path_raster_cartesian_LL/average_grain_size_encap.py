@@ -5,12 +5,65 @@ from skimage import filters, measure
 from scipy.ndimage import binary_erosion, binary_dilation
 import random
 
+def visualize_segment_process(image1, image2, image3, image4, image5, image6):
+    """
+            This funpction will display 6 images to show the original image and intermediate results of image processing and final segmentation results.
 
+            Parameters:
+            - image1: original image
+            - image2: Gaussian filtered image
+            - image3: Grayscale Image after Gaussian filter
+            - image4: Sobel Edge detection
+            - image5: Binary edges with added dilation
+            - image6: final segmented results with color map
+
+            Returns: (None)
+            - Just plot images in a window (2*3)
+
+    """
+    plt.figure(figsize=(10, 5))
+    plt.subplot(2, 3, 1)
+    plt.imshow(image1)
+    plt.title('Original Image')
+    plt.axis('off')
+
+    # Gaussian Filtered Image
+    plt.subplot(2, 3, 2)
+    plt.imshow(image2)
+    plt.title('Gaussian Filtered Image')
+    plt.axis('off')
+
+    # Grayscale Image
+    plt.subplot(2, 3, 3)
+    plt.imshow(image3, cmap='gray')
+    plt.title('Grayscale Image')
+    plt.axis('off')
+
+    # Sobel Edges
+    plt.subplot(2, 3, 4)
+    plt.imshow(image4, cmap='gray')
+    plt.title('Sobel Edges')
+    plt.axis('off')
+
+    # Binary Edges
+    plt.subplot(2, 3, 5)
+    plt.imshow(image5, cmap='binary')
+    # plt.imshow(binary_edges, cmap='binary')
+    plt.title('Binary Edges')
+    plt.axis('off')
+
+    # Labeled Image
+    plt.subplot(2, 3, 6)
+    plt.imshow(image6, cmap='jet')  # Use a colormap for better visualization
+    plt.title('Labeled Image')
+    plt.axis('off')
+
+    plt.show()
 
 def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_iterations=1,bin_min=0, bin_max=300, bins=15, plot_numbers_on_grains=True):
 
     """
-        This is a docstring for the example_function.
+        This function takes an image in numpy array format to process to segment the microstructure (grain) into different regions. and then calcualte the (weighted) average grain size for each image.
 
         Parameters:
         - image (numpy array): input image in RGB mode ( Nrow * Ncolumn * 3) - make sure it is 3 channels when input.
@@ -84,62 +137,18 @@ def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_
         total_size += region.area  # get total size of all grain area
 
     try:
-       # calculate weighted average grain size
-        weighted_avg_grain_size = weighted_sum / total_size
+        weighted_avg_grain_size = weighted_sum / total_size     # Calculate weighted average grain size
         #print("weighted average grain size is", weighted_avg_grain_size, "pixels")
 
     except ZeroDivisionError:
         print("Error: Division by zero. Number of detected region is zero.")
-        avg_grain_size = None  # or set a default value or handle it in another way
+        weighted_avg_grain_size = None  # or set a default value or handle it in another way
 
 
-    #option: Display marked region number on segmented grains
-    #if plot_numbers_on_grains:
-     #   plt.figure(figsize=(20, 15))
-     #   plt.imshow(randomized_colored_image, cmap='jet')
+    # Ploting images (intermediate processes and final results)
+    #visualize_segment_process(image, gaussian_np, gray_image, sobel_edges, binary_edges,randomized_colored_image) #binary edges without dilation.
+    visualize_segment_process(image, gaussian_np, gray_image, sobel_edges, dilated_edges,randomized_colored_image)
 
-
-
-
-    plt.figure(figsize=(10, 5))
-    plt.subplot(2, 3, 1)
-    plt.imshow(image)
-    plt.title('Original Image')
-    plt.axis('off')
-
-
-    # Gaussian Filtered Image
-    plt.subplot(2, 3, 2)
-    plt.imshow(gaussian_np)
-    plt.title('Gaussian Filtered Image')
-    plt.axis('off')
-
-    # Grayscale Image
-    plt.subplot(2, 3, 3)
-    plt.imshow(gray_image, cmap='gray')
-    plt.title('Grayscale Image')
-    plt.axis('off')
-
-    # Sobel Edges
-    plt.subplot(2, 3, 4)
-    plt.imshow(sobel_edges, cmap='gray')
-    plt.title('Sobel Edges')
-    plt.axis('off')
-
-    # Binary Edges
-    plt.subplot(2, 3, 5)
-    plt.imshow(dilated_edges, cmap='binary')
-    # plt.imshow(binary_edges, cmap='binary')
-    plt.title('Binary Edges')
-    plt.axis('off')
-
-    # Labeled Image
-    plt.subplot(2, 3, 6)
-    plt.imshow(randomized_colored_image, cmap='jet')  # Use a colormap for better visualization
-    plt.title('Labeled Image')
-    plt.axis('off')
-
-    plt.show()
 
     return bins, bin_min, bin_max, weighted_avg_grain_size, num_labels, total_size, labeled_image, regions_list
 
@@ -186,7 +195,8 @@ if __name__ == "__main__":
     #bin_number,  bin_lower, bin_upper, avg_grain_size, num_regions, total_grain_size, labeled_image, region_list = grain_segmentation(image_np)
 
     print(f"bin_number = {bin_number}, bin_min = {bin_lower}, bin_max = {bin_upper}, average grain size = {avg_grain_size:.3f} pixels, # of regions = {num_regions}, total grain size = {total_grain_size}")
-    #print(labeled_image)
     print("Printing the \"labeled_image\" and \"region_list\" upon request.")
+    # print(labeled_image)
 
+    # Plotting Histogram of grain size distribution
     histogram_plot(region_list, bin_number, bin_lower, bin_upper)
