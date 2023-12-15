@@ -173,7 +173,7 @@ def histogram_plot(grain_region_size_list, bin_num, bin_min, bin_max):
     plt.xlabel("Grain Size (pixels)")
     plt.ylabel("Number of Grain Regions")
     plt.title("Grain Size Distribution of " + file_name)
-    plt.savefig(r"../../../data/Results_grain_size_distribution/Grain Size Distribution of " + file_name+ ".png")
+    plt.savefig(r"../../../tmp/Grain Size Distribution of " + file_name+ ".png")
     plt.show()
 
 if __name__ == "__main__":
@@ -200,7 +200,7 @@ if __name__ == "__main__":
         file_name = image_file.split(".")[0]
         print(file_name)
         #Read Images
-        image_pil = Image.open(image_file).convert('RGB') #convert image mode to RGB (in case if not, e.g: some image may have 4 channels: RGBA)
+        image_pil = Image.open(os.path.join(image_folder_path,image_file)).convert('RGB') #convert image mode to RGB (in case if not, e.g: some image may have 4 channels: RGBA)
         image_np = np.array(image_pil) # Convert the PIL image to a NumPy array
 
 
