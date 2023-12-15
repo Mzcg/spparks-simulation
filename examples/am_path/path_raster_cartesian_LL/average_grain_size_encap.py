@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from skimage import filters, measure
 from scipy.ndimage import binary_erosion, binary_dilation
 import random
+import os
 
 def visualize_segment_process(image1, image2, image3, image4, image5, image6):
     """
@@ -145,7 +146,7 @@ def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_
         weighted_avg_grain_size = None  # or set a default value or handle it in another way
 
 
-    # Ploting images (intermediate processes and final results)
+    # -- Visualization of Intermediate Processes)
     #visualize_segment_process(image, gaussian_np, gray_image, sobel_edges, binary_edges,randomized_colored_image) #binary edges without dilation.
     visualize_segment_process(image, gaussian_np, gray_image, sobel_edges, dilated_edges,randomized_colored_image)
 
@@ -169,34 +170,54 @@ def histogram_plot(grain_region_size_list, bin_num, bin_min, bin_max):
     """
     n, bins, cts = plt.hist(grain_region_size_list, bins=bin_num, range=(bin_min, bin_max), ec='black')
     plt.bar_label(cts)  # Add numbers to the top of each bar
-    plt.xlabel("Grain Size")
+    plt.xlabel("Grain Size (pixels)")
     plt.ylabel("Number of Grain Regions")
+    plt.title("Grain Size Distribution of " + file_name)
+    plt.savefig(r"../../../data/Results_grain_size_distribution/Grain Size Distribution of " + file_name+ ".png")
     plt.show()
 
 if __name__ == "__main__":
-    image_path = 'speed_45_hatch_15_cropped.png'
-    image_pil = Image.open(image_path).convert('RGB') #convert image mode to RGB (in case if not, e.g: some image may have 4 channels: RGBA)
-    image_np = np.array(image_pil) # Convert the PIL image to a NumPy array
 
-    #Manually set up the values below:
+    histogram_plot_default = True  # True: plot automatically without manual setting for bin_min & _max. False: use following manual setting to plot.
+
+    # Manually set up the values below:
     gaussian_radius = 1
     sobel_threshold = 0.01
     dilation_iterations = 1
     bin_min = 0
-    bin_max = 500
+    bin_max = 400
     bins = 15
     plot_numbers_on_grains = False
 
-    #run with manual setup parameters
-    bin_number, bin_lower, bin_upper, avg_grain_size, num_regions, total_grain_size, labeled_image, region_list = grain_segmentation(
-        image_np, gaussian_radius, sobel_threshold, dilation_iterations,bin_min, bin_max, bins, plot_numbers_on_grains)
+    #image_path = r'../../../data/test_data/sample6.png'
+    #file_name = os.path.basename(image_path).split(".")[0]  # Get the image name without postfix
+    #image_pil = Image.open(image_path).convert('RGB')  # convert image mode to RGB (in case if not, e.g: some image may have 4 channels: RGBA)
+    #image_np = np.array(image_pil)  # Convert the PIL image to a NumPy array
 
-    #run with default value
-    #bin_number,  bin_lower, bin_upper, avg_grain_size, num_regions, total_grain_size, labeled_image, region_list = grain_segmentation(image_np)
+    image_folder_path = r'../../../data/test_data'
+    file_list = os.listdir(image_folder_path)
+    for image_file in file_list:
+        file_name = image_file.split(".")[0]
+        print(file_name)
+        #Read Images
+        image_pil = Image.open(image_file).convert('RGB') #convert image mode to RGB (in case if not, e.g: some image may have 4 channels: RGBA)
+        image_np = np.array(image_pil) # Convert the PIL image to a NumPy array
 
-    print(f"bin_number = {bin_number}, bin_min = {bin_lower}, bin_max = {bin_upper}, average grain size = {avg_grain_size:.3f} pixels, # of regions = {num_regions}, total grain size = {total_grain_size}")
-    print("Printing the \"labeled_image\" and \"region_list\" upon request.")
-    # print(labeled_image)
 
-    # Plotting Histogram of grain size distribution
-    histogram_plot(region_list, bin_number, bin_lower, bin_upper)
+
+        #run with manual setup parameters
+        bin_number, bin_lower, bin_upper, avg_grain_size, num_regions, total_grain_size, labeled_image, region_list = grain_segmentation(
+            image_np, gaussian_radius, sobel_threshold, dilation_iterations,bin_min, bin_max, bins, plot_numbers_on_grains)
+
+        #run with default value
+        #bin_number,  bin_lower, bin_upper, avg_grain_size, num_regions, total_grain_size, labeled_image, region_list = grain_segmentation(image_np)
+
+        print(f"bin_number = {bin_number}, bin_min = {bin_lower}, bin_max = {bin_upper}, average grain size = {avg_grain_size:.3f} pixels, # of regions = {num_regions}, total grain size = {total_grain_size}")
+        print("Printing the \"labeled_image\" and \"region_list\" upon request.")
+        # print(labeled_image)
+
+        # Plotting Histogram of grain size distribution
+        if histogram_plot_default:
+            histogram_plot(region_list, bin_number, np.min(region_list), np.max(region_list))
+        else: #if use manual setting for bin range.
+            histogram_plot(region_list, bin_number, bin_lower, bin_upper)
