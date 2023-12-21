@@ -62,7 +62,7 @@ def visualize_segment_process(image1, image2, image3, image4, image5, image6):
 
     plt.show()
 
-def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True):
+def grain_segmentation(image_np, gaussian_radius=1, sobel_threshold=0.01, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True):
 
     """
         This function takes an image in numpy array format to process to segment the microstructure (grain) into different regions. and then calcualte the (weighted) average grain size for each image.
@@ -81,7 +81,7 @@ def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_
         - histogram values:
             - bin_min (int): lower limit of the grain size to be displayed in histogram (min value can be 0)
             - bin_max (int): upper limit of the grain size to be displayed in histogram (max values can be the calculated maximum grain size, or self-defined values)
-            - ??? n_bins (int): number of bins that used for plotting histogram
+            - bins (array): a list of values that shows the number of each bin edge (e.g: [0, 100, 200,... 10000]). length of array is bin_max/n_bins
             - hist_n (array of int/float): a list of values that represent the count of each bar (e.g: if we have 15 bins, then there are 15 values in the list. each represent the number of counts (int), or in normazlied value (float) of each bar.
         - weighted average grain size (float): calculated weighted average grain size for each image
         - number of regions (int): number of grain detected using the algorithms
@@ -89,13 +89,22 @@ def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_
         - labeled image (array): segmented images saved in 2D-array
         - region list (array): save grain size for all the detected grain regions in a list.
     """
-    total_size = 0      #total size of all detected grains (sum of each grain size)
-    weighted_sum = 0    #used for calculate weighted average grain size of an image
-    regions_list = []   #save all the grain sizes in the list
 
+
+    hist_n, bins = [], []
+    weighted_avg_grain_size, num_labels, total_size = 0, 0, 0
+    labeled_image, regions_list = np.array([]), []
+
+
+    #total_size = 0      #total size of all detected grains (sum of each grain size)
+    weighted_sum = 0    #used for calculate weighted average grain size of an image
+    #regions_list = []   #save all the grain sizes in the list
+
+    # Create a PIL Image from the NumPy array
+    pil_image = Image.fromarray(image_np)
 
     # Apply Gaussian filter
-    gaussian_image = image_pil.filter(ImageFilter.GaussianBlur(radius=gaussian_radius))
+    gaussian_image = pil_image.filter(ImageFilter.GaussianBlur(radius=gaussian_radius))
     gaussian_np = np.array(gaussian_image) # Convert the PIL image to a NumPy array after Gaussian filtering
 
     # Edge Detection with Sobel
@@ -134,7 +143,8 @@ def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_
 
         # get each grain region statistics
         #print(f"Region {region.label}: Size = {region.area} pixels")  # print results in loop for the image
-        regions_list = np.append(regions_list, region.area)
+        #regions_list = np.append(regions_list, region.area)
+        regions_list.append(region.area)
 
         # calculate weighted sum and total_size of all grains
         weighted_sum += region.area * region.area  # accumulate the numerator (denominator is total_size)
@@ -158,6 +168,7 @@ def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_
     hist_n, bins = get_histogram(regions_list, n_bins, bin_min, bin_max )
 
 
+    #return hist_n, bins, bin_min, bin_max, weighted_avg_grain_size, num_labels, total_size, labeled_image, regions_list
     return hist_n, bins, bin_min, bin_max, weighted_avg_grain_size, num_labels, total_size, labeled_image, regions_list
 
 
@@ -177,21 +188,23 @@ def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max):
             - bins: a list of values that has width of each bar. if number of bins =100, bin_max = 10000, then the list values of difference of 100 -> [0, 100, 200, .. 100000]
     """
 
+
+
     if histogram_plot_default:  #using min and max values from calculation directly to plot.
 
         ### using np.histogram to plot the histogram
         #n, bins, = np.histogram(grain_region_size_list, bins=bin_num, range=(np.min(grain_region_size_list), np.max(grain_region_size_list)),density=True) #density: use normalized y-value if true.
-        n, bins, = np.histogram(grain_region_size_list, bins=bin_num, density=True) #density: use normalized y-value if true.
+        n, bin_edges, = np.histogram(grain_region_size_list, bins=bin_num, density=True) #density: use normalized y-value if true.
 
         if draw_histogram == True:
-            plt.bar(bins[:-1], n, width=np.diff(bins), color='blue', edgecolor='black', alpha=0.7)  # Plot the histogram using plt.bar
+            plt.bar(bin_edges[:-1], n, width=np.diff(bins), color='blue', edgecolor='black', alpha=0.7)  # Plot the histogram using plt.bar
 
             ### Option: if want to label the bar, uncomment below
-            #bars = plt.bar(bins[:-1], n, width=np.diff(bins), color='blue', edgecolor='black', alpha=0.7) # Plot the histogram using plt.bar
+            #bars = plt.bar(bin_edges[:-1], n, width=np.diff(bins), color='blue', edgecolor='black', alpha=0.7) # Plot the histogram using plt.bar
             #plt.bar_label(bars, fmt='{:.2e}', label_type='edge') # Add labels to the bars using plt.bar_label
 
             ### Option: plot lines connected bars, uncomment below
-            #plt.plot(bins[:-1],n, color = 'orange') #plot the lines above the bar
+            #plt.plot(bin_edges[:-1],n, color = 'orange') #plot the lines above the bar
 
             plt.xlabel("Grain Size (pixels)")
             plt.ylabel("Number of Grain Regions")
@@ -199,12 +212,12 @@ def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max):
             # plt.savefig(r"../../../tmp/Grain Size Distribution of " + file_name+ ".png")
             plt.show()
     else: #if histogram_plot_default = False, plot with MANUAL setting values (bin_min, bin_max)
-        n, bins, = np.histogram(grain_region_size_list, bins=bin_num,
+        n, bin_edges, = np.histogram(grain_region_size_list, bins=bin_num,
                                 range=(bin_min, bin_max),
                                 density=True)  # density: use normalized y-value if true.
 
         if draw_histogram == True:
-            plt.bar(bins[:-1], n, width=np.diff(bins), color='blue', edgecolor='black', alpha=0.7)  # Plot the histogram using plt.bar
+            plt.bar(bin_edges[:-1], n, width=np.diff(bins), color='blue', edgecolor='black', alpha=0.7)  # Plot the histogram using plt.bar
             plt.xlabel("Grain Size (pixels)")
             plt.ylabel("Number of Grain Regions")
             plt.title("Grain Size Distribution of " + file_name)
@@ -213,19 +226,79 @@ def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max):
 
 
 
-    return n, bins #array of histogram bar values (without normalization, it's the count of each bar; with normalization, it's the normalized values)
+    return n, bin_edges #array of histogram bar values (without normalization, it's the count of each bar; with normalization, it's the normalized values)
+
+def compare_images(image_np1, image_np2, gaussian_radius=1, sobel_threshold=0.01, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15):
+    """
+        This function compare the two images grain size distribution (histogram), and output the similarity index (similarity score: intersect; distance score: bhattacharyya)
+        We take two images (numpy array), and first call grain_segmentation to calculate the histogram, then we compare them using cv2 histogram comparison function.
+
+        Parameters:
+            - image_np1 (numpy array): image 1 as numpy array
+            - image_np2 (numpy array): image 2 input as numpy array
+            - gaussin_radius, sobel_threshold,, dilation_iterations, bin_min, bin_max, n_bins --> used for call grain_segmentation.
+
+        Return:
+            - similarity_score (float): compute use cv2.HISTCMP_INTERSECT
+            - distance_score (float): compute use cv2.HISTCMP_BHATTACHARYYA
+        """
 
 
-def compare_histogram(image1_name, image2_name, dict_distribution):
+    hist1, bins1, bin_min1, bin_max1, avg_grain_size1, num_regions1, total_grain_size1, labeled_image1, regions_list1 = grain_segmentation(
+         image_np1, gaussian_radius, sobel_threshold, dilation_iterations, bin_min, bin_max, n_bins, plot_numbers_on_grains)
+
+
+    hist2, bins2, bin_min2, bin_max2, avg_grain_size2, num_regions2, total_grain_size2, labeled_image2, regions_list2 = grain_segmentation(
+        image_np2, gaussian_radius, sobel_threshold, dilation_iterations, bin_min, bin_max, n_bins, plot_numbers_on_grains)
+
+
+    hist1 = np.array(hist1).astype(np.float32)
+    hist2 = np.array(hist2).astype(np.float32)
+
+    # d = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL) #correlation (similarity)
+    # d_chi = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CHISQR) #chi-squre (distance)
+    d_intersect = cv2.compareHist(hist1, hist2, cv2.HISTCMP_INTERSECT)  # intersect (similarity)
+    d_bhat = cv2.compareHist(hist1, hist2, cv2.HISTCMP_BHATTACHARYYA)  # bhattacharyya (distance)
+
+    similarity_score = d_intersect * 10 ** 2
+    distance_score = d_bhat
+
+    #print(f"Histogram Comparison: similarity score (intersect) = {similarity_score:.4f}e-02, distance (bhattacharyya) = {distance_score}") #test inside function
+    # ref: print(f" h1 vs h2: similarity index: correlation: {d:.4f}, chi-squred: {d_chi:.4f}, intersect: {d_intersect * 10 ** 2:.4f}e+02, bhattacharyya: {d_bhat:.4f}")
+
+    # plot log
+    kernel_size = 3
+    kernel = np.ones(kernel_size) / kernel_size
+
+    smoothed_hist1 = np.convolve(hist1, kernel, mode='same')
+    smoothed_hist2 = np.convolve(hist2, kernel, mode='same')
+
+    plt.semilogx(bins1[:-1], smoothed_hist1, 'r')
+    plt.semilogx(bins2[:-1], smoothed_hist2, 'g')
+
+    #plt.semilogx(bins1[:-1], hist1, 'b')
+    #plt.semilogx(bins2[:-1], hist2, 'y')
+
+    plt.xlim((1e2, 1e4))
+    plt.ylim((0, 2e-3))
+    plt.legend(['image1', 'image2'])
+    plt.title("")
+    plt.show()
+
+    return similarity_score, distance_score
+
+
+def compare_histogram(image1_name, image2_name , dict_distribution):
     """
                 This function compare the two images grain size distribution (histogram), and output the similarity index (similarity score: intersect; distance score: bhattacharyya)
+                We first calculate the distribution of each image, and then compare them using cv2 histogram comparison function.
 
                 Parameters:
-                - image1_name (str): e.g: 'sample5.png'
-                - image2_name (str): e.g: 'sample6.png'
-                - dict_distribution (dict): a dictionary that stores the key: image name , values: grain size distribution (list)
+                - image1 (np array)
+                - image2 (np array):
+                - dict_distribution (dictionary): key - image name, values: array of histogram values (each bar)
 
-                Return: =
+                Return:
                 - similarity_score (float): compute use cv2.HISTCMP_INTERSECT
                 - distance_score (float): compute use cv2.HISTCMP_BHATTACHARYYA
     """
@@ -241,7 +314,7 @@ def compare_histogram(image1_name, image2_name, dict_distribution):
     similarity_score = d_intersect * 10 ** 2
     distance_score = d_bhat
 
-    print(f"Histogram Comparison between '{image1_name}' and '{image2_name}': similarity score (intersect) = {similarity_score:.4f}e+02, distance (bhattacharyya) = {distance_score}")
+    print(f"Histogram Comparison between '{image1_name}' and '{image2_name}': similarity score (intersect) = {similarity_score:.4f}e-02, distance (bhattacharyya) = {distance_score}")
     #ref: print(f" h1 vs h2: similarity index: correlation: {d:.4f}, chi-squred: {d_chi:.4f}, intersect: {d_intersect * 10 ** 2:.4f}e+02, bhattacharyya: {d_bhat:.4f}")
 
     # plot log
@@ -258,6 +331,8 @@ def compare_histogram(image1_name, image2_name, dict_distribution):
     plt.show()
 
     return similarity_score, distance_score
+
+
 if __name__ == "__main__":
 
 
@@ -275,34 +350,53 @@ if __name__ == "__main__":
     n_bins = 100
     plot_numbers_on_grains = False
 
-    #image_path = r'../../../data/test_data/sample6.png'
-    #file_name = os.path.basename(image_path).split(".")[0]  # Get the image name without postfix
-    #image_pil = Image.open(image_path).convert('RGB')  # convert image mode to RGB (in case if not, e.g: some image may have 4 channels: RGBA)
-    #image_np = np.array(image_pil)  # Convert the PIL image to a NumPy array
 
     image_folder_path = r'../../../data/test_data'
     file_list = os.listdir(image_folder_path)
 
+    image_dict = {} #key: image name; values: numpy array of np
     dict_distribution = {} #save the map of key: image name, value: array of histogram values
     for image_file in file_list:
         file_name = image_file.split(".")[0]
-        print(file_name)
+        #print(file_name)
         #Read Images
         image_pil = Image.open(os.path.join(image_folder_path,image_file)).convert('RGB') #convert image mode to RGB (in case if not, e.g: some image may have 4 channels: RGBA)
-        image_np = np.array(image_pil) # Convert the PIL image to a NumPy array
+        image_np = np.array(image_pil) # Convert the PIL image to a NumPy array #note: later our input image will be numpy array, so we don't need to do taht.
 
         #run with manual setup parameters
-        hist_n, bins, bin_min, bin_max, avg_grain_size, num_regions, total_grain_size, labeled_image, regions_list = grain_segmentation(
-            image_np, gaussian_radius, sobel_threshold, dilation_iterations,bin_min, bin_max, n_bins, plot_numbers_on_grains)
+        #hist_n, bins, bin_min, bin_max, avg_grain_size, num_regions, total_grain_size, labeled_image, output_regions_list = grain_segmentation(
+        #    image_np, gaussian_radius, sobel_threshold, dilation_iterations,bin_min, bin_max, n_bins, plot_numbers_on_grains)
         #run with default value
         #bins,  bin_min, bin_max, avg_grain_size, num_regions, total_grain_size, labeled_image, regions_list = grain_segmentation(image_np)
 
-        print(f"bin_num = {n_bins}, bin_min = {bin_min}, bin_max = {bin_max}, average grain size = {avg_grain_size:.3f} pixels, # of regions = {num_regions}, total grain size = {total_grain_size}")
+        #print(f"bin_num = {n_bins}, bin_min = {bin_min}, bin_max = {bin_max}, average grain size = {avg_grain_size:.3f} pixels, # of regions = {num_regions}, total grain size = {total_grain_size}")
         # print("Printing the \"bins\",\"labeled_image\" and \"regions_list\" upon request (list).")
         # print(labeled_image)
 
+
         #store grain size distribution histogram results.
-        dict_distribution[image_file] = hist_n #save histogram bar values to dictionary. key: image name, value: array of bar values (normlized if density=True when plot)
+        #dict_distribution[image_file] = hist_n #save histogram bar values to dictionary. key: image name, value: array of bar values (normlized if density=True when plot)
+
+        #save images into dict
+        image_dict[image_file] = image_np
+
+
+
+    #print(image_dict[])
+    imagename_list  = list(image_dict.keys())
+
+    #get image nparray to pass to the fucntion
+    img1 = image_dict[imagename_list[0]]  # another way pass image (numpy array): list(image_dict.values())[0]
+    img2 = image_dict[imagename_list[1]]
+
+
+    #Run comapre images with default setting.
+    #s_score, d_score = compare_images(img1, img2)
+    #print(f"Default Image comparison between\'{list(image_dict.keys())[0]}\' and \'{list(image_dict.keys())[1]}\': similarity_score = {s_score}, distance_score = {d_score}")
+
+    #if use manual setting, use the following code
+    s_score, d_score = compare_images(img1,img2, gaussian_radius, sobel_threshold,dilation_iterations, bin_min, bin_max, n_bins)
+    print(f"Image comparison between\'{list(image_dict.keys())[0]}\' and \'{list(image_dict.keys())[1]}\': similarity_score (intersect) = {s_score:.4f}e-02, distance_score (bhattacharyya) = {d_score:.4f}")
 
 
     #compare two distribution histogram
@@ -315,10 +409,10 @@ if __name__ == "__main__":
     #sim_score, distance_score = compare_histogram(image1, image2, dict_distribution)
     #print(f"Histogram Comparison between '{image1}' and '{image2}': similarity score (intersect) = {sim_score:.4f}e+02, distance (bhattacharyya) = {distance_score}")
 
-    #note if we only have 2 images (original, predicted image), instead of using the name, we will loop the dictionary
-    imagename_list = list(dict_distribution.keys())
-    print(imagename_list)
-    similarity_score, distance_score = compare_histogram(imagename_list[0], imagename_list[1], dict_distribution)
+    #method 2: note if we only have 2 images (original, predicted image), instead of using the name, we will loop the dictionary
+    #imagename_list = list(dict_distribution.keys())
+    #print(imagename_list) #currently is ['sample5.png', 'sample6.png', 'speed_45_hatch_15_cropped.png', 'speed_90_hatch_15_CROP.png']. supposed only have two images (original, predict)
+    #similarity_score, distance_score = compare_histogram(imagename_list[0], imagename_list[1], dict_distribution)
 
 
 
@@ -327,6 +421,8 @@ if __name__ == "__main__":
 
 
     """
+    #plot all 4 sample images and their histogram for comparison 
+    
     #using file name to compare
     hist1 = np.array(dict_distribution['sample5.png']).astype(np.float32)
     hist2 = np.array(dict_distribution['sample6.png']).astype(np.float32)
