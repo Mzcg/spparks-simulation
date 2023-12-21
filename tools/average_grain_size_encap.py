@@ -1,11 +1,16 @@
-import cv2
-from PIL import Image, ImageFilter
-import numpy as np
-import matplotlib.pyplot as plt
-from skimage import filters, measure
-from scipy.ndimage import binary_erosion, binary_dilation
-import random
 import os
+import random
+
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image, ImageFilter
+from scipy.ndimage import binary_dilation
+from skimage import filters, measure
+
+import tensorflow as tf
+from tensorflow.keras.preprocessing import image
+
 
 def visualize_segment_process(image1, image2, image3, image4, image5, image6):
     """
@@ -62,7 +67,7 @@ def visualize_segment_process(image1, image2, image3, image4, image5, image6):
 
     plt.show()
 
-def grain_segmentation(image_np, gaussian_radius=1, sobel_threshold=0.01, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True):
+def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True):
 
     """
         This function takes an image in numpy array format to process to segment the microstructure (grain) into different regions. and then calcualte the (weighted) average grain size for each image.
@@ -100,8 +105,17 @@ def grain_segmentation(image_np, gaussian_radius=1, sobel_threshold=0.01, dilati
     weighted_sum = 0    #used for calculate weighted average grain size of an image
     #regions_list = []   #save all the grain sizes in the list
 
-    # Create a PIL Image from the NumPy array
-    pil_image = Image.fromarray(image_np)
+    #check the image input format:
+    if isinstance(image, tf.Tensor): #check if the input image is in Tensor format
+        #test: from tensor to numpy to pil
+        image_np = image.numpy()
+        pil_image = tf.keras.preprocessing.image.array_to_img(image_np)
+    elif isinstance(image, np.ndarray): #check if image input is in numpy array format.
+        # Create a PIL Image from the NumPy array (if the input image is in numpy array format)
+        image_np = image
+        pil_image = Image.fromarray(image_np)
+    else:
+        print("Warning: double check the image input format to make sure it is either np.array or Tensor format!")
 
     # Apply Gaussian filter
     gaussian_image = pil_image.filter(ImageFilter.GaussianBlur(radius=gaussian_radius))
@@ -360,39 +374,46 @@ if __name__ == "__main__":
     file_list = os.listdir(image_folder_path)
 
     image_dict = {} #key: image name; values: numpy array of np
+    image_tensor_dict = {}
     dict_distribution = {} #save the map of key: image name, value: array of histogram values
     for image_file in file_list:
-        file_name = image_file.split(".")[0]
-        #print(file_name)
-        #Read Images
-        image_pil = Image.open(os.path.join(image_folder_path,image_file)).convert('RGB') #convert image mode to RGB (in case if not, e.g: some image may have 4 channels: RGBA)
-        image_np = np.array(image_pil) # Convert the PIL image to a NumPy array #note: later our input image will be numpy array, so we don't need to do taht.
+        file_name = image_file.split(".")[0]  #file name: name without .png (e.g image_file = 'sample.png', file_name = 'sample')
+        image_path = os.path.join(image_folder_path, image_file)
 
-        #run with manual setup parameters
-        #hist_n, bins, bin_min, bin_max, avg_grain_size, num_regions, total_grain_size, labeled_image, output_regions_list = grain_segmentation(
-        #    image_np, gaussian_radius, sobel_threshold, dilation_iterations,bin_min, bin_max, n_bins, plot_numbers_on_grains)
-        #run with default value
-        #bins,  bin_min, bin_max, avg_grain_size, num_regions, total_grain_size, labeled_image, regions_list = grain_segmentation(image_np)
+        #### Get Image Data as Numpy Array format
 
-        #print(f"bin_num = {n_bins}, bin_min = {bin_min}, bin_max = {bin_max}, average grain size = {avg_grain_size:.3f} pixels, # of regions = {num_regions}, total grain size = {total_grain_size}")
-        # print("Printing the \"bins\",\"labeled_image\" and \"regions_list\" upon request (list).")
-        # print(labeled_image)
+        ## Read Images (with PIL) to numpy array
+        #image_pil = Image.open(os.path.join(image_folder_path,image_file)).convert('RGB') #convert image mode to RGB (in case if not, e.g: some image may have 4 channels: RGBA)
+        #image_np = np.array(image_pil) # Convert the PIL image to a NumPy array #note: later our input image will be numpy array, so we don't need to do taht.
+        ## save images into dict
+        #image_dict[image_file] = image_np
 
 
-        #store grain size distribution histogram results.
-        #dict_distribution[image_file] = hist_n #save histogram bar values to dictionary. key: image name, value: array of bar values (normlized if density=True when plot)
+        #Tensor Load: Load image as tensor format
+        image_raw = tf.io.read_file(image_path) #step1: read the image
+        image_tensor = tf.image.decode_image(image_raw, channels=3) #step2: decode the image to a tensor, and only get 3 channels (my image had 4 so to convert)
+        #print(image_tensor)
+        #save tensor image into dict
+        image_tensor_dict[image_file] = image_tensor
 
-        #save images into dict
-        image_dict[image_file] = image_np
+
+    #print(image_tensor_dict)
 
 
 
-    #print(image_dict[])
+    #print(image_dict)
     imagename_list  = list(image_dict.keys())
-
+    #imagename_list = list(image_tensor_dict.keys())
+    
     #get image nparray to pass to the fucntion
     img1 = image_dict[imagename_list[0]]  # another way pass image (numpy array): list(image_dict.values())[0]
     img2 = image_dict[imagename_list[1]]
+    ###img1 = image_tensor_dict[imagename_list[0]]
+    ###img2 = image_tensor_dict[imagename_list[1]]
+    #print("TYPE OF IMAGE 1:",type(img1))
+
+    img1_name_str = imagename_list[0]
+    img2_name_str = imagename_list[1]
 
 
     #Run comapre images with default setting.
@@ -401,9 +422,9 @@ if __name__ == "__main__":
 
     #if use manual setting, use the following code
     s_score, d_score = compare_images(img1,img2, gaussian_radius, sobel_threshold,dilation_iterations, bin_min, bin_max, n_bins)
-    print(f"Image comparison between\'{list(image_dict.keys())[0]}\' and \'{list(image_dict.keys())[1]}\': similarity_score (intersect) = {s_score:.4f}e-02, distance_score (bhattacharyya) = {d_score:.4f}")
+    print(f"Image comparison between\'{img1_name_str}\' and \'{img2_name_str}\': similarity_score (intersect) = {s_score:.4f}e-02, distance_score (bhattacharyya) = {d_score:.4f}")
 
-
+    """
     #compare two distribution histogram
 
     ### mehtod1: define the image name by hand
@@ -419,7 +440,7 @@ if __name__ == "__main__":
     #print(imagename_list) #currently is ['sample5.png', 'sample6.png', 'speed_45_hatch_15_cropped.png', 'speed_90_hatch_15_CROP.png']. supposed only have two images (original, predict)
     #similarity_score, distance_score = compare_histogram(imagename_list[0], imagename_list[1], dict_distribution)
 
-
+    """
 
 
 
