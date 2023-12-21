@@ -303,54 +303,6 @@ def compare_images(image_np1, image_np2, gaussian_radius=1, sobel_threshold=0.01
     return similarity_score, distance_score
 
 
-
-
-
-def compare_histogram(image1_name, image2_name , dict_distribution):
-    """
-                This function compare the two images grain size distribution (histogram), and output the similarity index (similarity score: intersect; distance score: bhattacharyya)
-                We first calculate the distribution of each image, and then compare them using cv2 histogram comparison function.
-
-                Parameters:
-                - image1 (np array)
-                - image2 (np array):
-                - dict_distribution (dictionary): key - image name, values: array of histogram values (each bar)
-
-                Return:
-                - similarity_score (float): compute use cv2.HISTCMP_INTERSECT
-                - distance_score (float): compute use cv2.HISTCMP_BHATTACHARYYA
-    """
-
-    hist1 = np.array(dict_distribution[image1_name]).astype(np.float32)
-    hist2 = np.array(dict_distribution[image2_name]).astype(np.float32)
-
-    #d = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL) #correlation (similarity)
-    #d_chi = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CHISQR) #chi-squre (distance)
-    d_intersect = cv2.compareHist(hist1, hist2, cv2.HISTCMP_INTERSECT) #intersect (similarity)
-    d_bhat = cv2.compareHist(hist1, hist2, cv2.HISTCMP_BHATTACHARYYA) #bhattacharyya (distance)
-
-    similarity_score = d_intersect * 10 ** 2
-    distance_score = d_bhat
-
-    print(f"Histogram Comparison between '{image1_name}' and '{image2_name}': similarity score (intersect) = {similarity_score:.4f}e-02, distance (bhattacharyya) = {distance_score}")
-    #ref: print(f" h1 vs h2: similarity index: correlation: {d:.4f}, chi-squred: {d_chi:.4f}, intersect: {d_intersect * 10 ** 2:.4f}e+02, bhattacharyya: {d_bhat:.4f}")
-
-    # plot log
-    kernel_size = 5
-    kernel = np.ones(kernel_size) / kernel_size
-
-    plt.semilogx(bins[:-1], hist1, 'r')
-    plt.semilogx(bins[:-1], hist2, 'g')
-
-
-    plt.xlim((1e2, 1e4))
-    plt.ylim((0, 2e-3))
-    plt.legend([image1_name, image2_name])
-    plt.show()
-
-    return similarity_score, distance_score
-
-
 if __name__ == "__main__":
 
 
@@ -375,7 +327,7 @@ if __name__ == "__main__":
 
     image_dict = {} #key: image name; values: numpy array of np
     image_tensor_dict = {}
-    dict_distribution = {} #save the map of key: image name, value: array of histogram values
+
     for image_file in file_list:
         file_name = image_file.split(".")[0]  #file name: name without .png (e.g image_file = 'sample.png', file_name = 'sample')
         image_path = os.path.join(image_folder_path, image_file)
@@ -427,101 +379,7 @@ if __name__ == "__main__":
     s_score, d_score = compare_images(img1,img2, gaussian_radius, sobel_threshold,dilation_iterations, bin_min, bin_max, n_bins)
     print(f"Image comparison between\'{img1_name_str}\' and \'{img2_name_str}\': similarity_score (intersect) = {s_score:.4f}e-02, distance_score (bhattacharyya) = {d_score:.4f}")
 
-    """
-    #compare two distribution histogram
 
-    ### mehtod1: define the image name by hand
-    #image1 = 'sample5.png'
-    #image2 = 'sample6.png'
-    #image3 = 'speed_45_hatch_15_cropped.png'
-    #image4 = 'speed_90_hatch_15_cropped.png'
-    #sim_score, distance_score = compare_histogram(image1, image2, dict_distribution)
-    #print(f"Histogram Comparison between '{image1}' and '{image2}': similarity score (intersect) = {sim_score:.4f}e+02, distance (bhattacharyya) = {distance_score}")
-
-    #method 2: note if we only have 2 images (original, predicted image), instead of using the name, we will loop the dictionary
-    #imagename_list = list(dict_distribution.keys())
-    #print(imagename_list) #currently is ['sample5.png', 'sample6.png', 'speed_45_hatch_15_cropped.png', 'speed_90_hatch_15_CROP.png']. supposed only have two images (original, predict)
-    #similarity_score, distance_score = compare_histogram(imagename_list[0], imagename_list[1], dict_distribution)
-
-    """
-
-
-
-
-
-    """
-    #plot all 4 sample images and their histogram for comparison 
-    
-    #using file name to compare
-    hist1 = np.array(dict_distribution['sample5.png']).astype(np.float32)
-    hist2 = np.array(dict_distribution['sample6.png']).astype(np.float32)
-    hist3 = np.array(dict_distribution['speed_45_hatch_15_cropped.png']).astype(np.float32)
-    hist4 = np.array(dict_distribution['speed_90_hatch_15_CROP.png']).astype(np.float32)
-
-    d = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)
-    d_chi = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CHISQR)
-    d_intersect = cv2.compareHist(hist1, hist2, cv2.HISTCMP_INTERSECT)
-    d_bhat = cv2.compareHist(hist1, hist2, cv2.HISTCMP_BHATTACHARYYA)
-    print(f" h1 vs h2: similarity index: correlation: {d:.4f}, chi-squred: {d_chi:.4f}, intersect: {d_intersect*10**2:.4f}e+02, bhattacharyya: {d_bhat:.4f}")
-
-
-
-    d = cv2.compareHist(hist2, hist4, cv2.HISTCMP_CORREL)
-    d_chi = cv2.compareHist(hist2, hist4, cv2.HISTCMP_CHISQR)
-    d_intersect = cv2.compareHist(hist2, hist4,cv2.HISTCMP_INTERSECT)
-    d_bhat = cv2.compareHist(hist2, hist4, cv2.HISTCMP_BHATTACHARYYA)
-    print(f" h2 vs h4: similarity index: correlation: {d:.4f}, chi-squred: {d_chi:.4f}, intersect: {d_intersect*10**2:.4f}e+02, bhattacharyya: {d_bhat:.4f}")
-
-
-    d = cv2.compareHist(hist2, hist2, cv2.HISTCMP_CORREL)
-    d_chi = cv2.compareHist(hist2, hist2, cv2.HISTCMP_CHISQR)
-    d_intersect = cv2.compareHist(hist2, hist2, cv2.HISTCMP_INTERSECT)
-    d_bhat = cv2.compareHist(hist2, hist2, cv2.HISTCMP_BHATTACHARYYA)
-    print(f" h2 vs h2: similarity index: correlation: {d:.4f}, chi-squred: {d_chi:.4f}, intersect: {d_intersect*10**2:.4f}e+02, bhattacharyya: {d_bhat:.4f}")
-
-    d = cv2.compareHist(hist3, hist4, cv2.HISTCMP_CORREL)
-    d_chi = cv2.compareHist(hist3, hist4, cv2.HISTCMP_CHISQR)
-    d_intersect = cv2.compareHist(hist3, hist4, cv2.HISTCMP_INTERSECT)
-    d_bhat = cv2.compareHist(hist3, hist4,cv2.HISTCMP_BHATTACHARYYA)
-    print( f" h3 vs h4 similarity index: correlation: {d:.4f}, chi-squred: {d_chi:.4f}, intersect: {d_intersect*10**2:.4f}e+02, bhattacharyya: {d_bhat:.4f}")
-
-    d = cv2.compareHist(hist1, hist3, cv2.HISTCMP_CORREL)
-    d_chi = cv2.compareHist(hist1, hist3, cv2.HISTCMP_CHISQR)
-    d_intersect = cv2.compareHist(hist1, hist3, cv2.HISTCMP_INTERSECT)
-    d_bhat = cv2.compareHist(hist1, hist3, cv2.HISTCMP_BHATTACHARYYA)
-    print(f" h1 vs h3 similarity index: correlation: {d:.4f}, chi-squred: {d_chi:.4f}, intersect: {d_intersect*10**2:.4f}e+02, bhattacharyya: {d_bhat:.4f}")
-
-    d = cv2.compareHist(hist2, hist3, cv2.HISTCMP_CORREL)
-    d_chi = cv2.compareHist(hist2, hist3, cv2.HISTCMP_CHISQR)
-    d_intersect = cv2.compareHist(hist2, hist3, cv2.HISTCMP_INTERSECT)
-    d_bhat = cv2.compareHist(hist2, hist3, cv2.HISTCMP_BHATTACHARYYA)
-
-    print(f" h2 vs h3 similarity index: correlation: {d:.4f}, chi-squred: {d_chi:.4f}, intersect: {d_intersect*10**2:.4f}e+02, bhattacharyya: {d_bhat:.4f}")
-
-    d = cv2.compareHist(hist1, hist4, cv2.HISTCMP_CORREL)
-    d_chi = cv2.compareHist(hist1, hist4, cv2.HISTCMP_CHISQR)
-    d_intersect = cv2.compareHist(hist1, hist4, cv2.HISTCMP_INTERSECT)
-    d_bhat = cv2.compareHist(hist1, hist4, cv2.HISTCMP_BHATTACHARYYA)
-
-    print(
-        f" h1 vs h4 similarity index: correlation: {d:.4f}, chi-squred: {d_chi:.4f}, intersect: {d_intersect * 10 ** 2:.4f}e+02, bhattacharyya: {d_bhat:.4f}")
-   
-
-    #plot log
-    kernel_size = 5
-    kernel = np.ones(kernel_size) / kernel_size
-
-    plt.semilogx(bins[:-1],hist1,'r')
-    plt.semilogx(bins[:-1],hist2,'g')
-    plt.semilogx(bins[:-1],hist3,'b')
-    plt.semilogx(bins[:-1],hist4,'k')
-
-    plt.xlim((1e2,1e4))
-    plt.ylim((0,2e-3))
-    plt.legend(['sample5','sample6','speed_45_hatch_15','speed_45_hatch_15'])
-    plt.show()
-    
-    """
 
 
 
