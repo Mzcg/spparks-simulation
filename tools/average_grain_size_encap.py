@@ -400,18 +400,21 @@ if __name__ == "__main__":
     #print(image_tensor_dict)
 
 
-
+    ##Get Image in Numpy Array format.
     #print(image_dict)
-    imagename_list  = list(image_dict.keys())
-    #imagename_list = list(image_tensor_dict.keys())
-    
-    #get image nparray to pass to the fucntion
-    img1 = image_dict[imagename_list[0]]  # another way pass image (numpy array): list(image_dict.values())[0]
-    img2 = image_dict[imagename_list[1]]
-    ###img1 = image_tensor_dict[imagename_list[0]]
-    ###img2 = image_tensor_dict[imagename_list[1]]
+    #imagename_list  = list(image_dict.keys())
+    ## get image nparray to pass to the fucntion
+    #img1 = image_dict[imagename_list[0]]  # another way pass image (numpy array): list(image_dict.values())[0]
+    #img2 = image_dict[imagename_list[1]]
+
+    #Get Image in Tensor format
+    imagename_list = list(image_tensor_dict.keys())
+    img1 = image_tensor_dict[imagename_list[0]]
+    img2 = image_tensor_dict[imagename_list[1]]
     #print("TYPE OF IMAGE 1:",type(img1))
 
+
+    #Get file name for result printing in screen (optional)
     img1_name_str = imagename_list[0]
     img2_name_str = imagename_list[1]
 
