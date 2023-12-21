@@ -228,7 +228,7 @@ def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max):
 
     return n, bin_edges #array of histogram bar values (without normalization, it's the count of each bar; with normalization, it's the normalized values)
 
-def compare_images(image_np1, image_np2, gaussian_radius=1, sobel_threshold=0.01, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15):
+def compare_images(image_np1, image_np2, gaussian_radius=1, sobel_threshold=0.01, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=100,plotOn=False):
     """
         This function compare the two images grain size distribution (histogram), and output the similarity index (similarity score: intersect; distance score: bhattacharyya)
         We take two images (numpy array), and first call grain_segmentation to calculate the histogram, then we compare them using cv2 histogram comparison function.
@@ -273,19 +273,23 @@ def compare_images(image_np1, image_np2, gaussian_radius=1, sobel_threshold=0.01
     smoothed_hist1 = np.convolve(hist1, kernel, mode='same')
     smoothed_hist2 = np.convolve(hist2, kernel, mode='same')
 
-    plt.semilogx(bins1[:-1], smoothed_hist1, 'r')
-    plt.semilogx(bins2[:-1], smoothed_hist2, 'g')
+    if plotOn:
+        plt.semilogx(bins1[:-1], smoothed_hist1, 'r')
+        plt.semilogx(bins2[:-1], smoothed_hist2, 'g')
 
-    #plt.semilogx(bins1[:-1], hist1, 'b')
-    #plt.semilogx(bins2[:-1], hist2, 'y')
+        # plt.semilogx(bins1[:-1], hist1, 'b')
+        # plt.semilogx(bins2[:-1], hist2, 'y')
 
-    plt.xlim((1e2, 1e4))
-    plt.ylim((0, 2e-3))
-    plt.legend(['image1', 'image2'])
-    plt.title("")
-    plt.show()
+        plt.xlim((1e2, 1e4))
+        plt.ylim((0, 2e-3))
+        plt.legend(['image1', 'image2'])
+        plt.title("")
+        plt.show()
 
     return similarity_score, distance_score
+
+
+
 
 
 def compare_histogram(image1_name, image2_name , dict_distribution):
@@ -351,7 +355,8 @@ if __name__ == "__main__":
     plot_numbers_on_grains = False
 
 
-    image_folder_path = r'../../../data/test_data'
+    image_folder_path = r'../data/test_data'
+
     file_list = os.listdir(image_folder_path)
 
     image_dict = {} #key: image name; values: numpy array of np
