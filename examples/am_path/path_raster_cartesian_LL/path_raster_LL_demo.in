@@ -1,0 +1,76 @@
+variable DT equal                2
+variable T equal                 0.25
+variable SEED equal              17133
+#variable SEED equal              1
+variable NUM_SPINS equal         90000
+#variable OUT universe            path_raster_cartesian_LL.st
+#COMMENT OUT ABOVE here for scripted runs
+variable HAZ equal               25
+variable ABS_TOL equal           0.02
+variable ALPHA   equal           0.75
+variable BETA equal				 0.50
+variable XY_SIZE    equal          256
+variable Z_SIZE    equal           48
+variable THICKNESS    equal         6
+variable NUMBER_OF_LAYERS    equal          ${Z_SIZE}/${THICKNESS}
+variable SPEED equal			9	
+variable MELTPOOL_WIDTH equal 		25.0
+variable HATCH	equal			${MELTPOOL_WIDTH}/2
+
+
+
+seed             ${SEED}
+
+#          app_name       num_spins    alpha   beta  haz
+app_style  potts/am/weld  ${NUM_SPINS} ${ALPHA} ${BETA} ${HAZ}
+
+weld_shape_teardrop width ${MELTPOOL_WIDTH} case I
+
+#Define simulation domain and initialize site variables
+#———————————————————————————————————————————
+dimension	 3
+lattice	 	 sc/26n 1.0
+#region		 box block 0 256 0 256 0 256
+region		 box block 0 ${XY_SIZE} 0 ${XY_SIZE} 0 ${Z_SIZE}
+		 		
+boundary 	 n n n
+
+create_box	 box
+create_sites	 box
+set		 i1 range 1 ${NUM_SPINS}
+set		 d1 value 0.0
+#———————————————————————————————————————————
+
+#Define an additive scan pattern
+#———————————————————————————————————————————
+am pass 1 dir X speed ${SPEED} hatch ${HATCH}
+am pass 2 dir Y speed ${SPEED} hatch ${HATCH}
+
+
+#am cartesian_layer 1 start LL pass_id 1 thickness ${THICKNESS} offset -40. 0.0
+#am cartesian_layer 2 start LL pass_id 2 thickness ${THICKNESS} offset 0.0 40
+am cartesian_layer  1 start LL pass_id 1 thickness ${THICKNESS} offset 0.0 0.0
+am cartesian_layer  2 start UL pass_id 2 thickness ${THICKNESS} offset 0.0 0.0
+
+
+# Starts at top of layer 1
+am build start ${THICKNESS} num_layers ${NUMBER_OF_LAYERS} 
+#———————————————————————————————————————————
+
+#Setup the solver type and parameters. Must use a "sweep" style solver
+#——————————————————————————————————————————— 
+sector		 yes
+sweep		 random mask no
+temperature	 ${T}
+#——————————————————————————————————————————— 
+
+#Specify output commands and styles.
+#——————————————————————————————————————————— 
+diag_style   energy
+stats            1.0
+
+dump         1 text 40.0 Trail_Speed_${SPEED}.dump
+#dump         dump.id stitch ${DT} ${OUT} site   # 1.0 does not matter
+#dump_modify dump.id tol ${ABS_TOL}
+
+run              1.0
