@@ -174,8 +174,9 @@ def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_
 
 
     # -- Visualization of Segmentation Intermediate Steps
-    #visualize_segment_process(image, gaussian_np, gray_image, sobel_edges, binary_edges,randomized_colored_image) #binary edges without dilation.
-    #visualize_segment_process(image, gaussian_np, gray_image, sobel_edges, dilated_edges,randomized_colored_image) #recommended
+    if show_intermediate_segmentation:
+        visualize_segment_process(image, gaussian_np, gray_image, sobel_edges, binary_edges,randomized_colored_image) #binary edges without dilation.
+        #visualize_segment_process(image, gaussian_np, gray_image, sobel_edges, dilated_edges,randomized_colored_image) #recommended
 
 
     #get histogram and visualize if needed.
@@ -211,7 +212,7 @@ def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max):
         n, bin_edges, = np.histogram(grain_region_size_list, bins=bin_num, density=True) #density: use normalized y-value if true.
 
         if draw_histogram == True:
-            plt.bar(bin_edges[:-1], n, width=np.diff(bins), color='blue', edgecolor='black', alpha=0.7)  # Plot the histogram using plt.bar
+            plt.bar(bin_edges[:-1], n, width=np.diff(bin_edges), color='blue', edgecolor='black', alpha=0.7)  # Plot the histogram using plt.bar
 
             ### Option: if want to label the bar, uncomment below
             #bars = plt.bar(bin_edges[:-1], n, width=np.diff(bins), color='blue', edgecolor='black', alpha=0.7) # Plot the histogram using plt.bar
@@ -231,7 +232,7 @@ def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max):
                                 density=True)  # density: use normalized y-value if true.
 
         if draw_histogram == True:
-            plt.bar(bin_edges[:-1], n, width=np.diff(bins), color='blue', edgecolor='black', alpha=0.7)  # Plot the histogram using plt.bar
+            plt.bar(bin_edges[:-1], n, width=np.diff(bin_edges), color='blue', edgecolor='black', alpha=0.7)  # Plot the histogram using plt.bar
             plt.xlabel("Grain Size (pixels)")
             plt.ylabel("Number of Grain Regions")
             plt.title("Grain Size Distribution of " + file_name)
@@ -300,14 +301,14 @@ def compare_images(image_np1, image_np2, gaussian_radius=1, sobel_threshold=0.01
         plt.title("")
         plt.show()
 
-    return similarity_score, distance_score
+    return similarity_score, distance_score, avg_grain_size1, avg_grain_size2
 
 
 if __name__ == "__main__":
 
-
+    show_intermediate_segmentation = False  #if want to display the six images of intermediate steps of grain segmentation, set to True
     draw_histogram = False  #if want to display the visualization of grain size distribution histogram, set it true.
-    histogram_plot_default = False  # Choose want to use manual setting (bin_min,max) to plot or not. True: auto plot with default values False: use following manual setting to plot.
+    histogram_plot_default = True # Choose want to use manual setting (bin_min,max) to plot or not. True: auto plot with default values False: use following manual setting to plot.
 
 
 
@@ -376,8 +377,10 @@ if __name__ == "__main__":
     #print(f"Default Image comparison between\'{list(image_dict.keys())[0]}\' and \'{list(image_dict.keys())[1]}\': similarity_score = {s_score}, distance_score = {d_score}")
 
     #if use manual setting, use the following code
-    s_score, d_score = compare_images(img1,img2, gaussian_radius, sobel_threshold,dilation_iterations, bin_min, bin_max, n_bins)
+    s_score, d_score, compute_grainsize_1, compute_grainsize_2 = compare_images(img1,img2, gaussian_radius, sobel_threshold,dilation_iterations, bin_min, bin_max, n_bins)
+    print(f"Weighted average grain size for \'{img1_name_str}\' is {compute_grainsize_1:.3f} pixels, and for \'{img2_name_str}\' is {compute_grainsize_2:.3f} pixels.")
     print(f"Image comparison between\'{img1_name_str}\' and \'{img2_name_str}\': similarity_score (intersect) = {s_score:.4f}e-02, distance_score (bhattacharyya) = {d_score:.4f}")
+
 
 
 
