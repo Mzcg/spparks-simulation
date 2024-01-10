@@ -9,7 +9,7 @@ variable Q equal 10000
 variable DT equal 0.0
 #
 # V: scan speed
-variable V equal 10.0
+variable V equal 10.0#SPEED
 #
 # HATCH: hatch spacing
 variable HATCH equal 20
@@ -38,7 +38,7 @@ variable MELT_DEPTH equal 15
 variable CAP_HEIGHT equal 4
 #
 # HAZ: surrounding melt pool (must larger than SPOT_WIDTH and MELT_DEPTH)
-variable HAZ equal 25
+variable HAZ equal 25#HAZ
 #
 # TAIL_HAZ: length of HAZ trailing meltpool (must be larger than MELT_TAIL_LENGTH)
 variable TAIL_HAZ equal 45
@@ -132,7 +132,7 @@ temperature	 ${T}
 diag_style   energy
 stats            1.0
 
-dump         1 text 1 3D_AM_mpWidth_${SPOT_WIDTH}_thickness_${THICKNESS}.dump
+dump         1 text 1 3D_AM_*.dump#DUMP_OUTPUT_FILE
 #dump         dump.id.1 stitch ${OUT_DT} ${OUT} site
 
 # App will automatically determine duration of run.
