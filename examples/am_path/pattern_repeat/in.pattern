@@ -12,7 +12,7 @@ variable DT equal 0.0
 variable V equal 10.0#SPEED
 #
 # HATCH: hatch spacing
-variable HATCH equal 20
+variable HATCH equal 12.5
 #
 # OUT_DT: time interval controlling output frequency
 variable OUT_DT equal 2.0
@@ -29,31 +29,38 @@ variable SEED equal 17133
 variable SPOT_WIDTH equal 15#SPOT_WIDTH
 #
 # MELT_TAIL_LENGTH: length of tail from meltpool midpoint
-variable MELT_TAIL_LENGTH equal 5
+#variable MELT_TAIL_LENGTH equal 5
+variable MELT_TAIL_LENGTH equal ${SPOT_WIDTH}*2.32
 #
 # MELT_DEPTH: how many lattice sites deep the melt pool is
-variable MELT_DEPTH equal 15
+#variable MELT_DEPTH equal 15
+variable MELT_DEPTH equal ${SPOT_WIDTH}
+
 #
 # CAP_HEIGHT: height of the cap leading the melt pool
-variable CAP_HEIGHT equal 4
+#variable CAP_HEIGHT equal 3
+variable CAP_HEIGHT equal ${SPOT_WIDTH}*0.26
 #
 # HAZ: surrounding melt pool (must larger than SPOT_WIDTH and MELT_DEPTH)
 variable HAZ equal 25#HAZ
 #
 # TAIL_HAZ: length of HAZ trailing meltpool (must be larger than MELT_TAIL_LENGTH)
-variable TAIL_HAZ equal 45
+#variable TAIL_HAZ equal 45
+variable TAIL_HAZ equal ${HAZ}*1.81
 #
 # DEPTH_HAZ:  HAZ depth below meltpool (must be larger than MELT_DEPTH)
-variable DEPTH_HAZ equal 22
+#variable DEPTH_HAZ equal 22
+variable DEPTH_HAZ equal ${HAZ}*0.89
 #
 # CAP_HAZ: HAZ infront of melt pool (must be larger than CAP_HEIGHT)
-variable CAP_HAZ equal 6
+#variable CAP_HAZ equal 6
+variable CAP_HAZ equal ${HAZ}*0.24
 #
 # BOX_XY: Box region size for x and y values (we want square shape each layer, so x=y)
-variable BOX_XY equal 56
+variable BOX_XY equal 256
 #
 # BOX_Z: Box region size for z axis (height)
-variable BOX_Z equal 56
+variable BOX_Z equal 256
 #
 # THICKNESS: layer thickness (BOX_Z = THICKNESS * NUM_LAYERS)
 variable THICKNESS equal 14#THICKNESS
@@ -132,7 +139,7 @@ temperature	 ${T}
 diag_style   energy
 stats            1.0
 
-dump         1 text 1 3D_AM_*.dump#DUMP_OUTPUT_FILE
+dump         1 text 50 3D_AM_*.dump#DUMP_OUTPUT_FILE
 #dump         dump.id.1 stitch ${OUT_DT} ${OUT} site
 
 # App will automatically determine duration of run.
