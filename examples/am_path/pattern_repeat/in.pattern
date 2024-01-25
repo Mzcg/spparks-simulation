@@ -1,4 +1,11 @@
 #
+
+# BOX_XY: Box region size for x and y values (we want square shape each layer, so x=y)
+variable BOX_XY equal 56
+#
+# BOX_Z: Box region size for z axis (height)
+variable BOX_Z equal 56
+#
 # T: simulation temperature
 variable T equal                 0.25
 #
@@ -56,12 +63,7 @@ variable DEPTH_HAZ equal ${HAZ}*0.89
 #variable CAP_HAZ equal 6
 variable CAP_HAZ equal ${HAZ}*0.24
 #
-# BOX_XY: Box region size for x and y values (we want square shape each layer, so x=y)
-variable BOX_XY equal 256
-#
-# BOX_Z: Box region size for z axis (height)
-variable BOX_Z equal 256
-#
+
 # THICKNESS: layer thickness (BOX_Z = THICKNESS * NUM_LAYERS)
 variable THICKNESS equal 14#THICKNESS
 #
@@ -118,8 +120,7 @@ set		 d1 value 0.0
 am pass 1 dir X speed ${V} hatch ${HATCH}
 am pass 2 dir Y speed ${V} hatch ${HATCH}
 
-#am cartesian_layer  1 start LL pass_id 1 thickness ${THICKNESS} offset -40.0 0.0
-#am cartesian_layer  2 start UL pass_id 2 thickness ${THICKNESS} offset 0.0 40.0
+
 am cartesian_layer  1 start LL pass_id 1 thickness ${THICKNESS} offset 0.0 0.0
 am cartesian_layer  2 start UL pass_id 2 thickness ${THICKNESS} offset 0.0 0.0
 
@@ -139,8 +140,8 @@ temperature	 ${T}
 diag_style   energy
 stats            1.0
 
-dump         1 text 50 3D_AM_*.dump#DUMP_OUTPUT_FILE
-#dump         dump.id.1 stitch ${OUT_DT} ${OUT} site
+dump         1 text 50 3D_AM_speed_${V}_mpWidth_${SPOT_WIDTH}_haz_${HAZ}_thickness_${THICKNESS}_*.dump#DUMP_OUTPUT_FILE
+
 
 # App will automatically determine duration of run.
 run 1.0
