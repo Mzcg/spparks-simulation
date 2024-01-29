@@ -35,12 +35,24 @@ input_file="in.pattern"
 #name new folder for saving NEW scripts (modified parameter values)
 new_scripts_folder='generated_SPPARKS_scripts'
 
+#create parent and sub-folders with specific values for results saving
+output_scripts_folder="$new_scripts_folder/speed_${speed}_mpwidth_${mpwidth}_haz_${haz}_thickness_${thickness}"
+
+# Check if the folder exists,, if exists no need to add folder
+if [ -d "$output_scripts_folder" ]; then
+  echo "Folder already exists: $output_scripts_folder"
+else
+  # Create the folder
+  mkdir -p "$output_scripts_folder"
+  echo "Folder created: $output_scripts_folder"
+fi
+
 #step 2: modify script files with new values obtained from command line
-output_script="3D_AMsim_speed_${speed}_thickness_${thickness}_mpwidth_${mpwidth}_haz_${haz}.in"
+output_script="3D_AMsim_speed_${speed}_mpwidth_${mpwidth}_haz_${haz}_thickness_${thickness}.in"
 
 #create parent and sub-folders with specific values for results saving
-output_scripts_folder="$new_scripts_folder/speed_${speed}_thickness_${thickness}_mpwidth_${mpwidth}_haz_${haz}"
-mkdir -p "$output_scripts_folder"
+#output_scripts_folder="$new_scripts_folder/speed_${speed}_thickness_${thickness}_mpwidth_${mpwidth}_haz_${haz}"
+#mkdir -p "$output_scripts_folder"
 
 # Replace only the first occurrence of the pattern and save it to the new output file
-sed "0,/3D_AM_*.dump#DUMP_OUTPUT_FILE/ s//"3D_AM_speed_${speed}_thickness_${thickness}_mpwidth_${mpwidth}_haz_${haz}_*.dump"/; 0,/10.0#SPEED/ s//${speed}/; 0, /15#SPOT_WIDTH/ s//${mpwidth}/; 0,/25#HAZ/ s//${haz}/; 0, /14#THICKNESS/ s//${thickness}/;"  "$input_file" > "$output_scripts_folder/$output_script"
+sed "0,/3D_AM_*.dump#DUMP_OUTPUT_FILE/ s//"3D_AM_speed_${speed}_mpwidth_${mpwidth}_haz_${haz}_thickness_${thickness}_*.dump"/; 0,/10.0#SPEED/ s//${speed}/; 0, /15#SPOT_WIDTH/ s//${mpwidth}/; 0,/25#HAZ/ s//${haz}/; 0, /14#THICKNESS/ s//${thickness}/;"  "$input_file" > "$output_scripts_folder/$output_script"

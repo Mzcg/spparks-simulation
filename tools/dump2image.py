@@ -22,7 +22,7 @@ class CoordinationPlotOverlay(ViewportOverlayInterface):
 
 
 # Pipeline setup:
-pipeline = import_file(r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\generated_...")
+pipeline = import_file(r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\generated_SPPARKS_scripts\speed_1_thickness_3_mpwidth_2_haz_4\3D_AM_speed_1_mpWidth_2_haz_4_thickness_399.dump")
 pipeline.add_to_scene()
 pipeline.modifiers.append(ColorCodingModifier(property='Particle Type'))
 # pipeline.modifiers.append(CoordinationAnalysisModifier(cutoff=3.0))
