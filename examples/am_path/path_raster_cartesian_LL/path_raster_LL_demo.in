@@ -1,21 +1,22 @@
 variable DT equal                2
 variable T equal                 0.25
 variable SEED equal              17133
-#variable SEED equal              1
+#variable SEED equal                       1
 variable NUM_SPINS equal         90000
-#variable OUT universe            path_raster_cartesian_LL.st
+#variable OUT universe                      path_raster_cartesian_LL.st
 #COMMENT OUT ABOVE here for scripted runs
-variable HAZ equal               25
+variable HAZ equal               48
 variable ABS_TOL equal           0.02
 variable ALPHA   equal           0.75
-variable BETA equal				 0.50
-variable XY_SIZE    equal          256
-variable Z_SIZE    equal           48
-variable THICKNESS    equal         6
-variable NUMBER_OF_LAYERS    equal          ${Z_SIZE}/${THICKNESS}
-variable SPEED equal			9	
-variable MELTPOOL_WIDTH equal 		25.0
-variable HATCH	equal			${MELTPOOL_WIDTH}/2
+variable BETA equal				 1.20
+variable XY_SIZE    equal        256
+variable Z_SIZE    equal         48
+variable THICKNESS    equal      6
+variable NUMBER_OF_LAYERS   equal   ${Z_SIZE}/${THICKNESS}
+variable SPEED equal			 9
+variable MELTPOOL_WIDTH equal 	 40
+variable HATCH	equal			 ${MELTPOOL_WIDTH}/2
+variable CASE universe           III
 
 
 
@@ -24,7 +25,7 @@ seed             ${SEED}
 #          app_name       num_spins    alpha   beta  haz
 app_style  potts/am/weld  ${NUM_SPINS} ${ALPHA} ${BETA} ${HAZ}
 
-weld_shape_teardrop width ${MELTPOOL_WIDTH} case I
+weld_shape_teardrop width ${MELTPOOL_WIDTH} case ${CASE}
 
 #Define simulation domain and initialize site variables
 #———————————————————————————————————————————
