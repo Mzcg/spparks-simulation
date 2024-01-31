@@ -16,8 +16,11 @@ import os
 
 #set up parameters selections in lists
 speed_list = [3, 30, 45]
-mpwidth_list = [69, 44, 25]
-haz_list = [114.0, 20.0]
+#mpwidth_list = [69, 44, 25]
+#haz_list = [114.0, 20.0]
+#thickness_list = [10.0]
+mpwidth_list = [69, 44]
+haz_list = [114.0]
 thickness_list = [10.0]
 
 print("speedlist: ", speed_list)
@@ -33,14 +36,15 @@ print("combinations:" , combinations)
 
 #step 4: generate spparks commands and run
 spk_mpi_location = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\spk_mpi"
-generated_scripts_folder_path = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\generated_SPPARKS_scripts"
+#generated_scripts_folder_path = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\generated_SPPARKS_scripts"
+generated_scripts_folder_path = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\SPPARKS_scripts_generation_test131212"
 command_all_filename = 'SPPARKS_commands_all.sh'
 commands_all_path = os.path.join(generated_scripts_folder_path, command_all_filename)
 
 # Create the directory if it doesn't exist
 os.makedirs(generated_scripts_folder_path, exist_ok=True)
 
-with open(commands_all_path, 'w') as file: #saving spparks command to a file.
+with open(commands_all_path, 'w', newline='\n') as file: #saving spparks command to a file. #b: in binary mode(unix readable)
 
 
 
@@ -74,35 +78,49 @@ with open(commands_all_path, 'w') as file: #saving spparks command to a file.
         #write all the running commands to a file
         #command line 1: start program and report time
         command_start_line = "echo \"Start Program : $(date)\" >> logAllruns.log"  #log file name: logAllruns.log
+        #unix_command_start_line = command_start_line.replace('\r\n', '\n')
 
         #command line 2: mpirun (run sppakrs scripts)
         num_processors = 28
         sppark_command = "mpirun -np "+str(num_processors)+ " " + "\""+spk_mpi_location + "\""+" < " + "\""+script_file_path + ".in\" "
         sppark_command = sppark_command.replace('C:/', '/mnt/c/')
+        #unix_sppark_command = sppark_command.replace('\r\n', '\n')
         print("SPPARKS COMMAND: ", sppark_command)
 
         #command line 3: move simulated dump files to corresponding folder
         move_dump_file = "mv ./*.dump " + dump_output_path
         move_dump_file = move_dump_file.replace('C:/', '/mnt/c/')
+        #unix_move_dump_file = move_dump_file.replace('\r\n', '\n')
         print("move dump file: ", move_dump_file)
 
         #command line 4: move simulated log.spparks file to corresponding folder
         move_log_file = "mv ./*.spparks " + dump_output_path
-        move_log_file = move_dump_file.replace('C:/', '/mnt/c/')
+        move_log_file = move_log_file.replace('C:/', '/mnt/c/')
+        #unix_move_log_file = move_log_file.replace('\r\n', '\n')
         print("move log.spparks file: ", move_log_file)
 
         # command line 5: move simulated tmp.lammps.variable file to corresponding folder
         move_lammps_file = "mv ./*.variable " + dump_output_path
-        move_lammps_file = move_dump_file.replace('C:/', '/mnt/c/')
+        move_lammps_file = move_lammps_file.replace('C:/', '/mnt/c/')
+        #unix_move_lammps_file = move_lammps_file.replace('\r\n', '\n')
         print("move tmp.lammps.variable file: ", move_lammps_file)
 
         #command line 6: print which folder we are working on now for writing to running log
         command_folder_line = "echo \"prgram ran for folder "+ generated_script_subfolder_name+"\" >> logAllruns.log"
+        #unix_command_folder_line = command_folder_line.replace('\r\n', '\n')
 
         #command line 7: end command for one simulation.
         command_end_line = "echo \"End Program : $(date)\" >> logAllruns.log"  # log file name: logAllruns.log
+        #unix_command_end_line = command_end_line.replace('\r\n', '\n')
 
         #write commands to the file "SPPARKS_commands_all.txt"
+        # file.write(unix_command_start_line + '\n')
+        # file.write(unix_sppark_command + '\n')
+        # file.write(unix_move_dump_file + '\n')
+        # file.write(unix_move_log_file + '\n')
+        # file.write(unix_move_lammps_file + '\n')
+        # file.write(unix_command_folder_line + '\n')
+        # file.write(unix_command_end_line + '\n')
         file.write(command_start_line + '\n')
         file.write(sppark_command + '\n')
         file.write(move_dump_file + '\n')

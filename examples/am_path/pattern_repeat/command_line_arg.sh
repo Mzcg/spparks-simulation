@@ -33,7 +33,8 @@ done
 input_file="in.pattern"
 
 #name new folder for saving NEW scripts (modified parameter values)
-new_scripts_folder='generated_SPPARKS_scripts'
+#new_scripts_folder='generated_SPPARKS_scripts'
+new_scripts_folder='SPPARKS_scripts_generation_test131212'
 
 #create parent and sub-folders with specific values for results saving
 output_scripts_folder="$new_scripts_folder/speed_${speed}_mpwidth_${mpwidth}_haz_${haz}_thickness_${thickness}"
