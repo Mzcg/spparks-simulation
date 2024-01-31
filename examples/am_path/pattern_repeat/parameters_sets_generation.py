@@ -111,6 +111,8 @@ with open(commands_all_path, 'w') as file: #saving spparks command to a file.
         file.write(command_folder_line + '\n')
         file.write(command_end_line + '\n')
 
+#change made.
+
 
 
 
