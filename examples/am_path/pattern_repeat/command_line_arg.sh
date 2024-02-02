@@ -26,6 +26,38 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+#set frame_time_gap based on speed
+case "$speed" in
+  3)
+    frame_time_gap=4500
+    ;;
+  9)
+    frame_time_gap=1500
+    ;;
+  15)
+    frame_time_gap=900
+    ;;
+  21)
+    frame_time_gap=650
+    ;;
+  27)
+    frame_time_gap=500
+    ;;
+  33)
+    frame_time_gap=450
+    ;;
+  39)
+    frame_time_gap=350
+    ;;
+  45)
+    frame_time_gap=300
+    ;;
+  *)
+    echo "Invalid speed value: $speed"
+    exit 1
+    ;;
+esac
+
 #echo "Speed: $speed, Power: $power, mpwidth: $mpwidth, haz: $haz"
 
 ### Send self-defined parameters from command line to the SPPARKS script
@@ -34,7 +66,7 @@ input_file="in.pattern"
 
 #name new folder for saving NEW scripts (modified parameter values)
 #new_scripts_folder='generated_SPPARKS_scripts'
-new_scripts_folder='SPPARKS_scripts_generation_test131212'
+new_scripts_folder='SPPARKS_scripts_generation_test201859'
 
 #create parent and sub-folders with specific values for results saving
 output_scripts_folder="$new_scripts_folder/speed_${speed}_mpwidth_${mpwidth}_haz_${haz}_thickness_${thickness}"
@@ -56,4 +88,6 @@ output_script="3D_AMsim_speed_${speed}_mpwidth_${mpwidth}_haz_${haz}_thickness_$
 #mkdir -p "$output_scripts_folder"
 
 # Replace only the first occurrence of the pattern and save it to the new output file
-sed "0,/3D_AM_*.dump#DUMP_OUTPUT_FILE/ s//"3D_AM_speed_${speed}_mpwidth_${mpwidth}_haz_${haz}_thickness_${thickness}_*.dump"/; 0,/10.0#SPEED/ s//${speed}/; 0, /15#SPOT_WIDTH/ s//${mpwidth}/; 0,/25#HAZ/ s//${haz}/; 0, /14#THICKNESS/ s//${thickness}/;"  "$input_file" > "$output_scripts_folder/$output_script"
+#sed "0,/3D_AM_*.dump#DUMP_OUTPUT_FILE/ s//"3D_AM_speed_${speed}_mpwidth_${mpwidth}_haz_${haz}_thickness_${thickness}_*.dump"/; 0,/10.0#SPEED/ s//${speed}/; 0, /15#SPOT_WIDTH/ s//${mpwidth}/; 0,/25#HAZ/ s//${haz}/; 0, /14#THICKNESS/ s//${thickness}/;"  "$input_file" > "$output_scripts_folder/$output_script"
+sed "0,/10.0#SPEED/ s//${speed}/; 0, /15#SPOT_WIDTH/ s//${mpwidth}/; 0,/25#HAZ/ s//${haz}/; 0, /14#THICKNESS/ s//${thickness}/; 0, /50#FRAME_TIME_GAP/ s//${frame_time_gap}/;"  "$input_file" > "$output_scripts_folder/$output_script"
+

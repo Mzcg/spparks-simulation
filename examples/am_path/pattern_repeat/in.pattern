@@ -1,13 +1,17 @@
 #
 
 # BOX_XY: Box region size for x and y values (we want square shape each layer, so x=y)
-variable BOX_XY equal 56
+variable BOX_XY equal 256
 #
 # BOX_Z: Box region size for z axis (height)
-variable BOX_Z equal 56
+variable BOX_Z equal 256
 #
+# FRAME_TIME_GAP: time increment between dumps (seconds)
+variable FRAME_TIME_GAP equal 50#FRAME_TIME_GAP
+
+
 # T: simulation temperature
-variable T equal                 0.25
+variable T equal 0.25
 #
 # number of spins
 variable Q equal 10000
@@ -140,7 +144,8 @@ temperature	 ${T}
 diag_style   energy
 stats            1.0
 
-dump         1 text 50 3D_AM_speed_${V}_mpWidth_${SPOT_WIDTH}_haz_${HAZ}_thickness_${THICKNESS}_*.dump#DUMP_OUTPUT_FILE
+#dump         1 text 50 3D_AM_speed_${V}_mpWidth_${SPOT_WIDTH}_haz_${HAZ}_thickness_${THICKNESS}_*.dump#DUMP_OUTPUT_FILE
+dump         1 text ${FRAME_TIME_GAP} 3D_AM_speed_${V}_mpWidth_${SPOT_WIDTH}_haz_${HAZ}_thickness_${THICKNESS}_*.dump#DUMP_OUTPUT_FILE
 
 
 # App will automatically determine duration of run.
