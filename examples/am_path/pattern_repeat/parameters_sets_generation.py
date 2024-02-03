@@ -16,14 +16,15 @@ from pathlib import Path
 #thickness_list = data['thickness'].dropna().tolist()
 
 #set up parameters selections in lists
-#speed_list = [3, 9,15, 21, 27, 33, 39, 45]
-speed_list = [3, 45]
+speed_list = [3, 9,15, 21, 27, 33, 39, 45]
+#speed_list = [3, 45]
 #mpwidth_list = [69, 44, 25]
-#haz_list = [114.0, 20.0]
+mpwidth_list = [69, 64, 58, 53, 47,42, 36, 31, 25]
+haz_list = [114.0, 92, 70, 47, 25.0]
 #thickness_list = [10.0]
-mpwidth_list = [69, 25]
-haz_list = [114.0]
-thickness_list = [10.0]
+#mpwidth_list = [69, 25]
+#haz_list = [114.0]
+thickness_list = [14, 11, 9, 6]
 
 print("speedlist: ", speed_list)
 print("mpwidthlist: ", mpwidth_list)
@@ -33,7 +34,7 @@ print("thickness: ", thickness_list)
 
 #step 3: generate all combinations of parameters and values
 combinations = list(itertools.product(speed_list, mpwidth_list, haz_list, thickness_list))
-print("combinations:" , combinations)
+print(len(combinations), " combinations:" , combinations)
 
 
 #step 4: generate spparks commands and run
@@ -42,7 +43,7 @@ print("combinations:" , combinations)
 #generated_scripts_folder_path = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\SPPARKS_scripts_generation_test201425"
 working_directory = os.path.dirname(os.path.abspath(__file__))
 
-generated_scripts_folder_path = os.path.join(working_directory, "SPPARKS_scripts_generation_test201859" )
+generated_scripts_folder_path = os.path.join(working_directory, "SPPARKS_scripts_generation_test_HPC_202" )
 command_all_filename = 'SPPARKS_commands_all.sh'
 print("file_path: ", generated_scripts_folder_path)
 commands_all_path = os.path.join(generated_scripts_folder_path, command_all_filename)
@@ -106,7 +107,11 @@ with open(commands_all_path, 'w', newline='\n') as file: #saving spparks command
         time_limit = "timeout 10s "
         #sppark_command = time_limit + "mpirun -np "+str(num_processors)+ " " + "\""+spk_mpi_location + "\""+" < " + "\""+script_file_path + ".in\" >> ShortRunSpparks.log"
         #sppark_command = time_limit + "mpirun -np "+str(num_processors)+ " " + "\"$spk_mpi_location\"" + " < " + "\"target_spparks_script\"" + " >> ShortRunSpparks.log"
-        sppark_command = time_limit + "mpirun -np "+str(num_processors)+ " " + "\"$spk_mpi_location\"" + " < " + "\"$target_script_file\"" + " >> ShortRunSpparks.log"
+        ### option 1: command with time limit:
+        #sppark_command = time_limit + "mpirun -np "+str(num_processors)+ " " + "\"$spk_mpi_location\"" + " < " + "\"$target_script_file\"" + " >> ShortRunSpparks.log"
+        #option 2: command without time limit：
+        sppark_command = "mpirun -np "+str(num_processors)+ " " + "\"$spk_mpi_location\"" + " < " + "\"$target_script_file\"" + " >> ShortRunSpparks.log"
+
         sppark_command = sppark_command.replace('C:/', '/mnt/c/')
         #unix_sppark_command = sppark_command.replace('\r\n', '\n')
         print("SPPARKS COMMAND: ", sppark_command)
