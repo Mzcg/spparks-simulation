@@ -43,7 +43,7 @@ print(len(combinations), " combinations:" , combinations)
 #generated_scripts_folder_path = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\SPPARKS_scripts_generation_test201425"
 working_directory = os.path.dirname(os.path.abspath(__file__))
 
-generated_scripts_folder_path = os.path.join(working_directory, "SPPARKS_scripts_generation_test_HPC_202" )
+generated_scripts_folder_path = os.path.join(working_directory, "SPPARKS_scripts_generation_test_HPC_box56" )
 command_all_filename = 'SPPARKS_commands_all.sh'
 print("file_path: ", generated_scripts_folder_path)
 commands_all_path = os.path.join(generated_scripts_folder_path, command_all_filename)
