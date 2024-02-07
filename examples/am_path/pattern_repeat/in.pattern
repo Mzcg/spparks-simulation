@@ -1,10 +1,10 @@
 #
 
 # BOX_XY: Box region size for x and y values (we want square shape each layer, so x=y)
-variable BOX_XY equal 256
+variable BOX_XY equal 56
 #
 # BOX_Z: Box region size for z axis (height)
-variable BOX_Z equal 256
+variable BOX_Z equal 56
 #
 # FRAME_TIME_GAP: time increment between dumps (seconds)
 variable FRAME_TIME_GAP equal 50#FRAME_TIME_GAP

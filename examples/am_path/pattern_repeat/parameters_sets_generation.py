@@ -109,10 +109,11 @@ with open(commands_all_path, 'w', newline='\n') as file: #saving spparks command
         #sppark_command = time_limit + "mpirun -np "+str(num_processors)+ " " + "\"$spk_mpi_location\"" + " < " + "\"target_spparks_script\"" + " >> ShortRunSpparks.log"
         ### option 1: command with time limit:
         #sppark_command = time_limit + "mpirun -np "+str(num_processors)+ " " + "\"$spk_mpi_location\"" + " < " + "\"$target_script_file\"" + " >> ShortRunSpparks.log"
-        #option 2: command without time limit：
-        sppark_command = "mpirun -np "+str(num_processors)+ " " + "\"$spk_mpi_location\"" + " < " + "\"$target_script_file\"" + " >> ShortRunSpparks.log"
-
-        sppark_command = sppark_command.replace('C:/', '/mnt/c/')
+        #option 2: command without time limit
+        #sppark_command = "mpirun -np "+str(num_processors)+ " " + "\"$spk_mpi_location\"" + " < " + "\"$target_script_file\"" + " >> ShortRunSpparks.log"
+        #option 2 (TACC hpc version)
+        sppark_command = "ibrun " + "\"$spk_mpi_location\"" + " < " + "\"$target_script_file\"" + " >> DetailsRunSpparks.log"
+        sppark_command = sppark_command.replace('C:/', '/mnt/c/')  #if use the string, this line may not userful anymore, but leave it here not changing anything. for time being, it's fine.
         #unix_sppark_command = sppark_command.replace('\r\n', '\n')
         print("SPPARKS COMMAND: ", sppark_command)
 
