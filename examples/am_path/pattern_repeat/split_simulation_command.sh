@@ -5,7 +5,7 @@
 input_script="SPPARKS_commands_all.sh"
 
 # Number of tests per file
-tests_per_file=3
+tests_per_file=2
 
 # Counter for file index
 file_index=1

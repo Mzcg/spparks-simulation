@@ -22,7 +22,7 @@ from pathlib import Path
 #thickness_list = [14, 11, 9, 6]
 
 
-speed_list = [3, 27, 45, 60, 90]
+speed_list = [3, 15, 27, 33, 45]
 #speed_list = [3]
 #mpwidth_list = [69, 44, 25]
 mpwidth_list = [69, 25]
@@ -64,7 +64,7 @@ with open(commands_all_path, 'w', newline='\n') as file: #saving spparks command
     root_scripts_folder_command = generated_scripts_folder_path
     #root_scripts_folder_command = root_scripts_folder_command.replace('\\', '/').replace('C:/', '/mnt/c/')
     #file.write("root=\""+root_scripts_folder_command+"\""+"\n") #sample: root="/mnt/c/Users/zg0017/PycharmProjects/spparks-simulation/examples/am_path/pattern_repeat/SPPARKS_scripts_generation_test_HPC_202"
-    root_scripts_folder_command = root_scripts_folder_command.replace('\\', '/').replace('C:/Users', '/work/08207') #for hpc path:
+    root_scripts_folder_command = root_scripts_folder_command.replace('\\', '/').replace('C:/Users/zg0017/PycharmProjects', '/work/08207/zg0017') #for hpc path:
     file.write("root=\""+root_scripts_folder_command+"\""+"\n") #sample: root=
 
     #line2- set spk_mpi location(no repeat):
