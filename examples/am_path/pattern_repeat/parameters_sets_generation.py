@@ -1,6 +1,6 @@
 import itertools
 import subprocess
-import pandas as pd
+#import pandas as pd
 import os
 from pathlib import Path
 
@@ -16,15 +16,21 @@ from pathlib import Path
 #thickness_list = data['thickness'].dropna().tolist()
 
 #set up parameters selections in lists
-speed_list = [3, 9,15, 21, 27, 33, 39, 45]
-#speed_list = [3, 45]
+#speed_list = [3, 9, 15, 21, 27, 33, 39, 45]
+#mpwidth_list = [69, 64, 58, 53, 47,42, 36, 31, 25]
+#haz_list = [114.0, 102, 91, 80, 69]
+#thickness_list = [14, 11, 9, 6]
+
+
+speed_list = [3, 27, 45, 60, 90]
+#speed_list = [3]
 #mpwidth_list = [69, 44, 25]
-mpwidth_list = [69, 64, 58, 53, 47,42, 36, 31, 25]
-haz_list = [114.0, 92, 70, 47, 25.0]
-#thickness_list = [10.0]
+mpwidth_list = [69, 25]
+thickness_list = [10.0]
 #mpwidth_list = [69, 25]
-#haz_list = [114.0]
-thickness_list = [14, 11, 9, 6]
+haz_list = [69]
+
+#thickness_list = [14]
 
 print("speedlist: ", speed_list)
 print("mpwidthlist: ", mpwidth_list)
@@ -43,7 +49,7 @@ print(len(combinations), " combinations:" , combinations)
 #generated_scripts_folder_path = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\SPPARKS_scripts_generation_test201425"
 working_directory = os.path.dirname(os.path.abspath(__file__))
 
-generated_scripts_folder_path = os.path.join(working_directory, "SPPARKS_scripts_generation_test_HPC_box56" )
+generated_scripts_folder_path = os.path.join(working_directory, "SPPARKS_scripts_generation_splittest_20240223")
 command_all_filename = 'SPPARKS_commands_all.sh'
 print("file_path: ", generated_scripts_folder_path)
 commands_all_path = os.path.join(generated_scripts_folder_path, command_all_filename)
@@ -56,8 +62,10 @@ with open(commands_all_path, 'w', newline='\n') as file: #saving spparks command
     #generated folder path for commands running in server/linux/cluster system.
     #line1-set root folder(no repeat): e.g.: root="/mnt/c/Users/zg0017/PycharmProjects/spparks-simulation/examples/am_path/pattern_repeat/SPPARKS_scripts_generation"
     root_scripts_folder_command = generated_scripts_folder_path
-    root_scripts_folder_command = root_scripts_folder_command.replace('\\', '/').replace('C:/', '/mnt/c/')
-    file.write("root=\""+root_scripts_folder_command+"\""+"\n")
+    #root_scripts_folder_command = root_scripts_folder_command.replace('\\', '/').replace('C:/', '/mnt/c/')
+    #file.write("root=\""+root_scripts_folder_command+"\""+"\n") #sample: root="/mnt/c/Users/zg0017/PycharmProjects/spparks-simulation/examples/am_path/pattern_repeat/SPPARKS_scripts_generation_test_HPC_202"
+    root_scripts_folder_command = root_scripts_folder_command.replace('\\', '/').replace('C:/Users', '/work/08207') #for hpc path:
+    file.write("root=\""+root_scripts_folder_command+"\""+"\n") #sample: root=
 
     #line2- set spk_mpi location(no repeat):
     spk_mpi_location_command = "spk_mpi_location=\"$root/../spk_mpi\""
@@ -67,15 +75,16 @@ with open(commands_all_path, 'w', newline='\n') as file: #saving spparks command
     for comb in combinations:
         command_line_args = f"-speed {comb[0]} -mpwidth {comb[1]} -haz {comb[2]} -thickness {comb[3]}"
         script_path = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\command_line_arg.sh "
+        #script_path = "/mnt/c/Users/zg0017/PycharmProjects/spparks-simulation/examples/am_path/pattern_repeat/command_line_arg.sh " #linux path (this is for test now)
         command = script_path + command_line_args
 
-        print(command)
+        print("command: ", command)
 
         # Set the working directory to the parent directory of the new_scripts_folder
         #working_directory = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat"
         # run the command line to active running shell script for generating new SPPARKS script files into separate folder (code in command_line_arg.sh)
         #working_directory = os.getcwd() #e.g: r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat"
-        result = subprocess.run(command, check=True, shell=True, cwd=working_directory) #need to set the working directory to generate new folder using command_line_arg.sh file
+        result =subprocess.run(command, check=True, shell=True, cwd=working_directory) #need to set the working directory to generate new folder using command_line_arg.sh file
         result.check_returncode()  # Raise an exception if the command fails
 
         # Generate SPPARKS running command for multiple combination of variables
