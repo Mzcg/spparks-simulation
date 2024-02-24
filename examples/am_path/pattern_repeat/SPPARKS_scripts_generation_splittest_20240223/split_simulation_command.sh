@@ -4,13 +4,13 @@
 input_script="SPPARKS_commands_all.sh"
 
 # Number of tests per file
-tests_per_file=2
+tests_per_file=3
 
 # Counter for file index
 file_index=1
 
 # Initialize the output file
-output_file="split_file_${file_index}.sh"
+output_file="slurm-split_file_${file_index}.sh"
 log_file="logAllrun_${file_index}.log"
 echo "Setting up $output_file"
 echo "Setting up $log_file"
@@ -43,14 +43,15 @@ root_added=false
 spk_mpi_added=false
 # Function to reset the output file
 reset_output_file() {
-    output_file="split_file_${file_index}.sh"
+    output_file="slurm-split_file_${file_index}.sh"
     log_file="logRuns_${file_index}.log"
     echo "Setting up $output_file"
     echo "Setting up $log_file"
     add_header >> "$output_file"  # Call the function to generate the comprehensive header
 
 
-    echo 'root="/mnt/c/Users/zg0017/PycharmProjects/spparks-simulation/examples/am_path/pattern_repeat/SPPARKS_scripts_generation_test_HPC_202"' >> "$output_file"
+    #echo 'root="/mnt/c/Users/zg0017/PycharmProjects/spparks-simulation/examples/am_path/pattern_repeat/SPPARKS_scripts_generation_test_HPC_202"' >> "$output_file"
+    echo 'root="/work/08207/zg0017/PycharmProjects/spparks-simulation/examples/am_path/pattern_repeat/SPPARKS_scripts_generation_splittest_20240223"' >> "$output_file"
     echo 'spk_mpi_location="$root/../spk_mpi"' >> "$output_file"
 
 }
@@ -91,8 +92,7 @@ while IFS= read -r line; do
         echo "$line" >> "$output_file"
     fi
 done < "$input_script"
-# Add the "End Program" line to the last file
-add_end_program
+
 
 # Replace logAllruns.log with logAllrun_index.log in all split files
 for i in $(seq 1 $file_index); do
