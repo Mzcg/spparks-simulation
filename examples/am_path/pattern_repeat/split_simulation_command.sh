@@ -1,14 +1,18 @@
 #!/bin/bash
 
+#changable variables: #define machine mode want to use in the TACC cluster
+tests_per_file=2            # Number of tests per file
+machine_mode="development"  #define machine mode to run on TACC - option: development (for test), normal (for run)
+nodes_num=1                 #determine how many nodes want to use to run the simulation.
+run_time="01:50:00"         #running time: 01:50:00 or 48:00:00
+
 
 # Input script file
 input_script="SPPARKS_commands_all.sh"
 
-# Number of tests per file
-tests_per_file=2
-
 # Counter for file index
 file_index=1
+
 
 # Initialize the output file
 output_file="slurm-split_file_${file_index}.sh"
@@ -18,17 +22,17 @@ echo "Setting up $log_file"
 # Function to generate comprehensive header
 
 add_header() {
-    echo '#!/bin/bash'  # Shebang line
+    echo "#!/bin/bash"  # Shebang line
     echo ''
-    echo '#SBATCH -J sim_test        # Job name'
-    echo '#SBATCH -o myjob.o%j       # Name of stdout output file'
-    echo '#SBATCH -e myjob.e%j       # Name of stderr error file'
-    echo '#SBATCH -p development     # Queue (partition) name'
-    echo '#SBATCH -N 1               # Total # of nodes'
-    echo '#SBATCH -n 128             # Total # of mpi tasks'
-    echo '#SBATCH -t 01:50:00        # Run time (hh:mm:ss)'
-    echo '#SBATCH --mail-type=all    # Send email at begin and end of job'
-    echo '#SBATCH --mail-user=ZhaochenGu@my.unt.edu'
+    echo "#SBATCH -J sim_test_${file_index}        # Job name"
+    echo "#SBATCH -o myjob.o%j       # Name of stdout output file"
+    echo "#SBATCH -e myjob.e%j       # Name of stderr error file"
+    echo "#SBATCH -p $machine_mode   # Queue (partition) name"
+    echo "#SBATCH -N $nodes_num      # Total # of nodes"
+    echo "#SBATCH -n 128             # Total # of mpi tasks"
+    echo "#SBATCH -t $run_time        # Run time (hh:mm:ss)"
+    echo "#SBATCH --mail-type=all    # Send email at begin and end of job"
+    echo "#SBATCH --mail-user=ZhaochenGu@my.unt.edu"
     echo ''
     echo '# Any other commands must follow all #SBATCH directives...'
     echo 'module list'
