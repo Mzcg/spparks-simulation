@@ -16,19 +16,21 @@ from pathlib import Path
 #thickness_list = data['thickness'].dropna().tolist()
 
 #set up parameters selections in lists
-#speed_list = [3, 9, 15, 21, 27, 33, 39, 45]
-#mpwidth_list = [69, 64, 58, 53, 47,42, 36, 31, 25]
-#haz_list = [114.0, 102, 91, 80, 69]
-#thickness_list = [14, 11, 9, 6]
+speed_list = [3, 13, 23, 33, 42, 52, 63, 72]
+mpwidth_list = [40, 35, 30, 25, 20, 15, 10]
+haz_list = [91, 82, 74, 65, 56, 48, 40]
+thickness_list = [11, 8, 7, 5]
 
 
-speed_list = [3, 15, 27, 33, 45]
+#mpwidth_list = [10]
+#haz_list = [40]
+#speed_list = [3]
 #speed_list = [3]
 #mpwidth_list = [69, 44, 25]
-mpwidth_list = [69, 25]
-thickness_list = [10.0]
+
+#thickness_list = [5]
 #mpwidth_list = [69, 25]
-haz_list = [69]
+
 
 #thickness_list = [14]
 
@@ -49,7 +51,7 @@ print(len(combinations), " combinations:" , combinations)
 #generated_scripts_folder_path = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\SPPARKS_scripts_generation_test201425"
 working_directory = os.path.dirname(os.path.abspath(__file__))
 
-generated_scripts_folder_path = os.path.join(working_directory, "SPPARKS_scripts_generation_splittest_20240223")
+generated_scripts_folder_path = os.path.join(working_directory, "SPPARKS_scripts_generation_128_20240306")
 command_all_filename = 'SPPARKS_commands_all.sh'
 print("file_path: ", generated_scripts_folder_path)
 commands_all_path = os.path.join(generated_scripts_folder_path, command_all_filename)

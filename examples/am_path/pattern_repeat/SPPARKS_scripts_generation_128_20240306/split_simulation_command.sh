@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #changable variables: #define machine mode want to use in the TACC cluster
-tests_per_file=3            # Number of tests per file
-machine_mode="development"  #define machine mode to run on TACC - option: development (for test), normal (for run)
-nodes_num=1                 #determine how many nodes want to use to run the simulation.
-run_time="01:50:00"         #running time: 01:50:00 or 48:00:00
-
+tests_per_file=140            # Number of tests per file
+machine_mode="normal"  #define machine mode to run on TACC - option: development (for test), normal (for run)
+nodes_num=2                 #determine how many nodes want to use to run the simulation.
+run_time="48:00:00"         #running time: 01:50:00 or 48:00:00
+root_folder_name='root="/work/08207/zg0017/spparks-simulation/examples/am_path/pattern_repeat/SPPARKS_scripts_generation_128_20240306"'
 
 # Input script file
 input_script="SPPARKS_commands_all.sh"
@@ -24,11 +24,11 @@ echo "Setting up $log_file"
 add_header() {
     echo "#!/bin/bash"  # Shebang line
     echo ''
-    echo "#SBATCH -J sim_test_${file_index}      # Job name"
+    echo "#SBATCH -J sim_test_${file_index}        # Job name"
     echo "#SBATCH -o myjob.o%j       # Name of stdout output file"
     echo "#SBATCH -e myjob.e%j       # Name of stderr error file"
-    echo "#SBATCH -p $machine_mode     # Queue (partition) name"
-    echo "#SBATCH -N $nodes_num        # Total # of nodes"
+    echo "#SBATCH -p $machine_mode   # Queue (partition) name"
+    echo "#SBATCH -N $nodes_num      # Total # of nodes"
     echo "#SBATCH -n 128             # Total # of mpi tasks"
     echo "#SBATCH -t $run_time        # Run time (hh:mm:ss)"
     echo "#SBATCH --mail-type=all    # Send email at begin and end of job"
@@ -56,7 +56,8 @@ reset_output_file() {
 
 
     #echo 'root="/mnt/c/Users/zg0017/PycharmProjects/spparks-simulation/examples/am_path/pattern_repeat/SPPARKS_scripts_generation_test_HPC_202"' >> "$output_file"
-    echo 'root="/work/08207/zg0017/spparks-simulation/examples/am_path/pattern_repeat/SPPARKS_scripts_generation_splittest_20240223"' >> "$output_file"
+    #echo 'root="/work/08207/zg0017/spparks-simulation/examples/am_path/pattern_repeat/SPPARKS_scripts_generation_splittest_20240223"' >> "$output_file"
+    echo "$root_folder_name" >> "$output_file"
     echo 'spk_mpi_location="$root/../spk_mpi"' >> "$output_file"
 
 }

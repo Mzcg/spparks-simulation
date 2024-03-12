@@ -1,4 +1,3 @@
-#objective: generate a script to submit all slurm-split_file_n.sh jobs to HPC using just one file instead of submit job one by one.
 import os
 
 current_folder = os.getcwd()
