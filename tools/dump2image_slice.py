@@ -31,21 +31,6 @@ filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path
 #filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\3D_AM_speed_3_mpWidth_10_haz_40_thickness_5_234.dump" #size 128
 
 
-
-#cut along x-axis, get yz view - single test code
-# dist_yz = 28
-# img_yz = import_file(filepath)
-# img_yz.add_to_scene()
-# img_yz.modifiers.append(ColorCodingModifier(property='Particle Type'))
-# img_yz.modifiers.append(SliceModifier(normal=(1, 0, 0), distance=dist_yz, operate_on={'particles'}, slab_width=5))
-# vp_yz = Viewport(camera_dir=(1, 0, 0))  # camer_dir=(1,0,0) -> y<z^// (0,0,1)->x<y^ // (0,1,0)->x>z^
-# # vp_slice1.type = Viewport.Type.Front  #Type options: Perspective, TOP, FRONT, ORTHO
-# vp_yz.zoom_all(size=settings["figSize"])
-# vp_yz.render_image(filename=f'YZ_{dist_yz}__TEST_dup.png', background=(0, 0, 0),
-#                        size=settings["figSize"], renderer=TachyonRenderer())
-# print("yz: ",dist_yz)
-#
-
 def get_distance_snapshot(filepath,slice_distance, direction, slab=5):
 
     if direction == "xy":
