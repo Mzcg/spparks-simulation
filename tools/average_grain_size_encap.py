@@ -67,7 +67,7 @@ def visualize_segment_process(image1, image2, image3, image4, image5, image6):
 
     plt.show()
 
-def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True):
+def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True, show_intermediate_segmentation=False, histogram_plot_default=True, draw_histogram=False):
 
     """
         This function takes an image in numpy array format to process to segment the microstructure (grain) into different regions. and then calcualte the (weighted) average grain size for each image.
@@ -180,7 +180,7 @@ def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_
 
 
     #get histogram and visualize if needed.
-    hist_n, bins = get_histogram(regions_list, n_bins, bin_min, bin_max )
+    hist_n, bins = get_histogram(regions_list, n_bins, bin_min, bin_max, histogram_plot_default, draw_histogram)
 
 
     #return hist_n, bins, bin_min, bin_max, weighted_avg_grain_size, num_labels, total_size, labeled_image, regions_list
@@ -188,7 +188,7 @@ def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.01, dilation_
 
 
 
-def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max):
+def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max, histogram_plot_default, draw_histogram):
     """
             Grain size distribution plot
 
