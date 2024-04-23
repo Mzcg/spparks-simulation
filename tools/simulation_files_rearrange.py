@@ -37,11 +37,14 @@ def get_simu_folder_values(folder_name):
 #print(get_folder_name(get_file_name))
 
 parent_folder_path = r'C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\simulation_results_file_exchange_demo'  #path to parent folder
-log_file_rearrange = "file_rearrange.log"
-log_file_path = os.path.join(parent_folder_path, log_file_rearrange)
+log_file_rearrange_error = "file_rearrange_error.log"
+log_file_rearrange_error_path = os.path.join(parent_folder_path, log_file_rearrange_error)
 
-def main (parent_folder_path, log_file_path):
-    with open(log_file_path, 'a' ) as log_file:
+log_file_success = "success_file_rearrange_report.log"
+log_file_success_path = os.path.join(parent_folder_path, log_file_success)
+
+def main (parent_folder_path, log_file_rearrange_error_path, log_file_success_path):
+    with open(log_file_rearrange_error_path, 'a' ) as log_file:
         #iterate through subfolders
         for simu_folder_name in os.listdir(parent_folder_path):  #simu_folder_name eg: speed_23_mpwidth_35_haz_82_thickness_11
             simu_folder_path = os.path.join(parent_folder_path, simu_folder_name)
@@ -81,7 +84,8 @@ def main (parent_folder_path, log_file_path):
                                     log_file.write(f"Error! correct folder not found: dump file '{work_file}' remains in current simulation folder '{simu_folder_name}'\n")
                                     continue
                                 shutil.move(os.path.join(simu_folder_path, work_file), correct_folder_path)
-                                log_file.write(f"Done! dump file '{work_file}' moved to correct folder path '{simu_folder_name}'\n")
+                                with open(log_file_success_path,'a') as log_success: #stored the completed moving (successfully done) to different log file.
+                                    log_success.write(f"Done! dump file '{work_file}' moved from wrong folder '{simu_folder_name}' to correct folder '{correct_folder_name}'\n")
 
 
 
@@ -89,5 +93,5 @@ def main (parent_folder_path, log_file_path):
 
 
 
-main(parent_folder_path, log_file_path)
+main(parent_folder_path, log_file_rearrange_error_path, log_file_success_path)
 
