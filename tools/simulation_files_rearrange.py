@@ -36,11 +36,12 @@ def get_simu_folder_values(folder_name):
 #print(get_file_name)
 #print(get_folder_name(get_file_name))
 
-parent_folder_path = r'C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\simulation_results_file_exchange_demo'  #path to parent folder
+#parent_folder_path = r'C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\simulation_results_file_exchange_demo'  #path to parent folder  #demo
+parent_folder_path = r'D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306'  #path to parent folder
 log_file_rearrange_error = "file_rearrange_error.log"
 log_file_rearrange_error_path = os.path.join(parent_folder_path, log_file_rearrange_error)
 
-log_file_success = "success_file_rearrange_report.log"
+log_file_success = "file_rearrange_success.log"
 log_file_success_path = os.path.join(parent_folder_path, log_file_success)
 
 def main (parent_folder_path, log_file_rearrange_error_path, log_file_success_path):
@@ -89,9 +90,6 @@ def main (parent_folder_path, log_file_rearrange_error_path, log_file_success_pa
 
 
 
-
-
-
-
 main(parent_folder_path, log_file_rearrange_error_path, log_file_success_path)
 
+#note: one time run and get results. if need to run more times, remove the generated log file "file_rearrange_error.log" and "file_rearrange_success.log" from the folder.
