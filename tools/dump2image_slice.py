@@ -22,20 +22,22 @@ os.environ["QT_API"] = "pyqt5"
 
 
 settings = {"figSize":(900,600),
-            "cut_distance": ( 56,42,  28, 14),
-            #"cut_distance": ( 128, 96,  64, 32 ),
+            #"cut_distance": ( 56,42,  28, 14),
+            "cut_distance": ( 128, 96,  64, 32, 0 ),
             }
 
 
-filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\3D_AM_speed_3_mpWidth_69_haz_114_thickness_14_7.dump" #size 56  #slice dim: 14, 28, 42 ,56
+#filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\3D_AM_speed_3_mpWidth_69_haz_114_thickness_14_7.dump" #size 56  #slice dim: 14, 28, 42 ,56
 #filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\3D_AM_speed_3_mpWidth_10_haz_40_thickness_5_234.dump" #size 128
+filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\clean_simulation_results_demo\speed_13_mpwidth_25_haz_56_thickness_5\3D_AM_speed_13_mpWidth_25_haz_56_thickness_5_9.dump" #temp test for Images_generation.py  #size 128
 
 
-def get_distance_snapshot(filepath,slice_distance, direction, slab=5):
+def get_distance_snapshot(filepath,slice_distance, direction, output_filepath, slab=5 ):
 
     if direction == "xy":
         normal_plane_vector = (0,0,1)
         camera_direction = (0,0,-1)
+
     elif direction == "yz":
         normal_plane_vector = (1,0,0)
         camera_direction = (1, 0, 0)
@@ -50,28 +52,36 @@ def get_distance_snapshot(filepath,slice_distance, direction, slab=5):
     vp = Viewport(camera_dir=camera_direction)  # camer_dir=(1,0,0) -> y<z^// (0,0,1)->x<y^ // (0,1,0)->x>z^
     # vp_slice1.type = Viewport.Type.Front  #Type options: Perspective, TOP, FRONT, ORTHO
     vp.zoom_all(size=settings["figSize"])
-    vp.render_image(filename=f'{direction}_{slice_distance}.png', background=(0, 0, 0),
-                       size=settings["figSize"], renderer=OpenGLRenderer())  #renderer=TachyonRenderer()   #renderer=OpenGLRenderer()
+
+    output_slice_filename = f'{direction}_{slice_distance}.png'
+    output_slices_path = os.path.join(output_filepath, output_slice_filename)
+
+    vp.render_image(filename=output_slices_path, background=(0, 0, 0),
+                    size=settings["figSize"],
+                    renderer=OpenGLRenderer())  # renderer=TachyonRenderer()   #renderer=OpenGLRenderer()
+   # vp.render_image(filename=f'{direction}_{slice_distance}.png', background=(0, 0, 0),
+    #                   size=settings["figSize"], renderer=OpenGLRenderer())  #renderer=TachyonRenderer()   #renderer=OpenGLRenderer()
     print(direction, ": ", slice_distance)
     img.remove_from_scene()
 
 
 #Part 1: getting slices and output to png images ( we will get 3 (directions) * 3 (distances) = 9 output images)
-def plot_distance_slices(filepath):
+def plot_distance_slices(filepath, output_filepath):
     for dist in settings["cut_distance"]:
         #get slice from xy direciton (cut in z-axis)
-        get_distance_snapshot(filepath,dist, "xy", slab=5)
+        get_distance_snapshot(filepath,dist, "xy",  output_filepath, slab=5)
 
         #get slice from yz direction (cut in x-axis)
-        get_distance_snapshot(filepath, dist, "yz", slab=5)
+        get_distance_snapshot(filepath, dist, "yz", output_filepath, slab=5)
 
         #get slice from xz direction (cut in y-axis)
-        get_distance_snapshot(filepath, dist, "xz", slab=5)
+        get_distance_snapshot(filepath, dist, "xz", output_filepath, slab=5)
 
-def plot_3D_view(filepath):
+def plot_3D_view(filepath, output_filepath):
     #getting full view of simulation in 3D and output to png image. (get 1 image output of 3D view）
     pipeline = import_file(filepath)
-    pipeline.modifiers.append(SliceModifier(normal=(0,28,0), distance=0, operate_on={'particles'}, slab_width=128))
+    #pipeline.modifiers.append(SliceModifier(normal=(0,28,0), distance=0, operate_on={'particles'}, slab_width=128))
+    pipeline.modifiers.append(SliceModifier(normal=(0,28,0), distance=0, operate_on={'particles'},slab_width=256))
     # Compute the effect of the slice modifier by evaluating the pipeline.
     output = pipeline.compute()
     print("Remaining particle count:", output.particles.count) # Multiplication of size (e.g: 56 * 56 * 56 = 175616)
@@ -82,20 +92,26 @@ def plot_3D_view(filepath):
 
     ## View in 3D (Perspective) with manual setting direction
     viewport.camera_pos = (-100, -150, 150)
-    viewport.camera_dir = (2, 3, -3)
-    viewport.fov = math.radians(45.0)
+    viewport.camera_dir = (2,3, -3)
+    viewport.fov = math.radians(30.0)
 
 
     viewport.zoom_all(size=settings["figSize"])
-    viewport.render_image(filename='full_view.png',background=(0,0,0), size=settings["figSize"], renderer=TachyonRenderer())  #rendere=OpenGLRenderer()
+    #viewport.render_image(filename='full_view.png',background=(0,0,0), size=settings["figSize"], renderer=TachyonRenderer())  #rendere=OpenGLRenderer()
+    viewport.render_image(filename=output_filepath,background=(0,0,0), size=settings["figSize"], renderer=TachyonRenderer())  #rendere=OpenGLRenderer()
     pipeline.remove_from_scene()#make sure to add this to overcome duplicate layers that affects other vis in loop
 
     print("full view done")
 
 def main():
     start_time = time.time()
-    plot_3D_view(filepath) #function call: generate 3D view ->output single 3D image
-    plot_distance_slices(filepath) #function call: generate multiple slices images according to distance
+    ## Call 3D full view generation function
+    #output_fp = os.path.join(os.getcwd(), "test_full_view.png") #test code
+    #plot_3D_view(filepath, output_filepath=output_fp) #function call: generate 3D view ->output single 3D image
+
+    ## Call Slices generation function
+    output_slices_folder_path = os.getcwd()
+    plot_distance_slices(filepath, output_slices_folder_path) #function call: generate multiple slices images according to distance
 
     end_time = time.time()
     running_time = end_time - start_time
