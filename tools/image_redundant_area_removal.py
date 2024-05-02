@@ -22,7 +22,7 @@ _, binary_mask = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
 # Find contours in the binary mask
 contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-# Assuming the colored area is the largest contour, find it男生和女生在群里很默契
+# Assuming the colored area is the largest contour, find it
 if contours:
     # Find the largest contour
     largest_contour = max(contours, key=cv2.contourArea)
