@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 import shutil
+import csv
 
 '''
 #Task 1: try on single demo image
@@ -38,13 +39,13 @@ def remove_black_area(image_path):
 noblack_image_path = os.path.join(os.getcwd(), 'demo_remove_yz128.png')
 
 def crop_75_from_bottom(noblack_image_path, output_cropped_image_folder_path):
-    print(noblack_image_path)
-    filename = noblack_image_path.split("\\")[-1]
-    print(filename)
-    prefix = filename.split(".")[0]
-    new_string = prefix+ "_cut75.png"
-    print(new_string)
-    '''
+    #print(noblack_image_path)
+    #filename = noblack_image_path.split("\\")[-1]
+    #print(filename)
+    #prefix = filename.split(".")[0]
+    #new_filename = prefix+ "_cut75.png"
+    #print(new_filename)
+
     
     #before_crop = cv2.imread("noblack.png")
     before_crop = cv2.imread(noblack_image_path)
@@ -56,14 +57,18 @@ def crop_75_from_bottom(noblack_image_path, output_cropped_image_folder_path):
     cut_image = before_crop[start_row:, :] #crop the image to keep the bottom 75% and remove the top 25%
     #cut_image_path = 'noblack_cutimage_75ratio.png'
 
-    orig_filename = noblack_image_path.split("/")
-    print(noblack_image_path)
+
+    #new_image_path =
     cv2.imwrite(output_cropped_image_folder_path, cut_image)
     #print(f"Cropped image saved as '{cut_image_path}'")
 
     # Display the size of the cropped image
     cut_height, cut_width, cut_channels = cut_image.shape
-    print(f"Size of the cropped image: Width = {cut_width}, Height = {cut_height}, Channels = {cut_channels}")
+    simufoldername = noblack_image_path.split("\\")[-2]
+    imgname = noblack_image_path.split("\\")[-1]
+    print(f"Size of the cropped image {imgname} in from simulation {simufoldername}: Width = {cut_width}, Height = {cut_height}, Channels = {cut_channels}")
+
+    return simufoldername, imgname, width, height, cut_width, cut_height #note: imgname is original image name without modify (modifed version in main function)
     '''
 crop_75_from_bottom(noblack_image_path, "tttest.png")
 
@@ -73,7 +78,7 @@ crop_75_from_bottom(noblack_image_path, "tttest.png")
 
 #resizeback = cv2.resize(resized_image, (531,397)) #just test
 #cv2.imwrite("noblack_resizeback.png", resizeback)
-
+'''
 def main():
     REMOVE_BLACK = True
     CUT_75 = True
@@ -96,29 +101,42 @@ def main():
                 remove_black_area(img_path)
     '''
     if CUT_75 == True:
-        #step 2: cut 75/128 from bottom of images (store images to new folder) - keep extra files for references
-        #2a: create an empty folder named "simulation_images_generation_cut75"
-        cut75_folder_name = "simulation_images_generation_cut75"
-        cut75_folder_path = os.path.join(data_folder_path, cut75_folder_name) # new folder to store 75 cut images.
-        print(cut75_folder_path)
-        os.makedirs(cut75_folder_path, exist_ok=True)  # folder generation: create folder for each simulations inside separate images folders
-        #shutil.copytree(blackremoval_folder_path, cut75_folder_path)
+        csv_path = os.path.join(data_folder_path, "cut75ratio_image_size_stat.csv")
+        #NOTE!!: if rerun, clean the csv, because we append the results
+        with open(csv_path,"w",newline='') as csv_file:
+            header = ['simulation_file','slice_image','original_image_width(noblack)','original_image_height(noblack)','cut_image_width','cut_image_height']
+            csv_writer = csv.writer(csv_file) #create csv_writer object
+            csv_writer.writerow(header)
 
-        for simu_folder_noblack in os.listdir(blackremoval_folder_path): #get the noblack image data
-            simu_folder_noblack_path_org = os.path.join(blackremoval_folder_path, simu_folder_noblack) #path for obtain the simulation folder from balck removal folder
-            simu_folder_noblack_path_new = os.path.join(cut75_folder_path, simu_folder_noblack) #create path for each simulation folder in new folder
-            os.makedirs(simu_folder_noblack_path_new, exist_ok=True) #create subfolder
-            for img_noblack in os.listdir(simu_folder_noblack_path_org):
-                if img_noblack == "full_view.png": #exclude the full_view (3d file) to process
-                    continue
-                img_noblack_path_org = os.path.join(simu_folder_noblack_path_org, img_noblack) #get the image as input to the function.
-                print(img_noblack_path_org)
+            #step 2: cut 75/128 from bottom of images (store images to new folder) - keep extra files for references
+            #2a: create an empty folder named "simulation_images_generation_cut75"
+            cut75_folder_name = "simulation_images_generation_cut75"
+            cut75_folder_path = os.path.join(data_folder_path, cut75_folder_name) # new folder to store 75 cut images.
+            print(cut75_folder_path)
+            os.makedirs(cut75_folder_path, exist_ok=True)  # folder generation: create folder for each simulations inside separate images folders
+            #shutil.copytree(blackremoval_folder_path, cut75_folder_path)
 
-                # to do:
-                #1. fix the fucntion of crop 75 from bottom
-                #2. call function and put image in
-                #3. store image to output file (simu_folder_noblack_path_new)
-                #output will see in the new folder, we have cutted image of simulation witn 75/128 size from bottom)
+            for simu_folder_noblack in os.listdir(blackremoval_folder_path): #get the noblack image data
+                simu_folder_noblack_path_org = os.path.join(blackremoval_folder_path, simu_folder_noblack) # src:path for obtain the simulation folder from balck removal folder
+                simu_folder_noblack_path_new = os.path.join(cut75_folder_path, simu_folder_noblack) #dst: create path for each simulation folder in new folder
+                os.makedirs(simu_folder_noblack_path_new, exist_ok=True) #create subfolder
+                for img_noblack in os.listdir(simu_folder_noblack_path_org):
+                    if img_noblack == "full_view.png": #exclude the full_view (3d file) to process
+                        continue
+                    img_noblack_path_org = os.path.join(simu_folder_noblack_path_org, img_noblack) #src: get the image as input to the function.
+
+                    org_filename = img_noblack_path_org.split("\\")[-1]
+                    prefix = org_filename.split(".")[0]
+                    new_filename = prefix + "_cut75.png"
+                    new_filename_path = os.path.join(simu_folder_noblack_path_new, new_filename)  #dst: used as output file path
+                    #crop_75_from_bottom(img_noblack_path_org, new_filename_path) #function call to generate images to new folder
+
+                    #store the imge size info to csv
+                    simu_name, img_name, org_noblack_width, org_noblack_height, cut_width_size, cut_height_size = crop_75_from_bottom(img_noblack_path_org, new_filename_path)
+                    csv_writer.writerow([simu_name, new_filename, org_noblack_width, org_noblack_height, cut_width_size,cut_height_size])
+
+
+
 
 
 if __name__ == "__main__":
