@@ -10,9 +10,10 @@ Task 1a: remove the black area surrounding the simulation box area for single di
 Task 1b: cut and main only 75/128 (based on size ratio) from the bottom.
 '''
 
-data_folder_path = r'C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\clean_simulation_results_demo'  #demo test
+#data_folder_path = r'C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\clean_simulation_results_demo'  #demo test
+data_folder_path = r'D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306'
 #image_path = 'demo_remove_yz128.png' #image with black area outside of box area.
-output_image_path_noblack = 'noblack.png'
+#output_image_path_noblack = 'noblack.png'
 def remove_black_area(image_path):
 
     image = cv2.imread(image_path) # Load the image
@@ -69,26 +70,17 @@ def crop_75_from_bottom(noblack_image_path, output_cropped_image_folder_path):
     print(f"Size of the cropped image {imgname} in from simulation {simufoldername}: Width = {cut_width}, Height = {cut_height}, Channels = {cut_channels}")
 
     return simufoldername, imgname, width, height, cut_width, cut_height #note: imgname is original image name without modify (modifed version in main function)
-    '''
-crop_75_from_bottom(noblack_image_path, "tttest.png")
 
-#no do resize now, will do it later when preprocessin for ML.
-#resized_image = cv2.resize(cut_image, (128, 128), interpolation=cv2.INTER_CUBIC)
-#cv2.imwrite("noblack_cutimage_resize128.png", resized_image)
-
-#resizeback = cv2.resize(resized_image, (531,397)) #just test
-#cv2.imwrite("noblack_resizeback.png", resizeback)
-'''
 def main():
-    REMOVE_BLACK = True
+    REMOVE_BLACK = False
     CUT_75 = True
 
 
     #step 1: remove black area among the images (store to new folder: "simulation_images_generation_removeBlack")
-    blackremoval_folder_name = "simulation_images_generation_removeBlack"
+    blackremoval_folder_name = "simulation_images_generation_removeBlack_JET" #create folder name for saving result later
     blackremoval_folder_path = os.path.join(data_folder_path, blackremoval_folder_name)  # set up path for creating a new folder to store images
-    src_folder = os.path.join(data_folder_path,"simulation_images_generation")
-    '''
+    src_folder = os.path.join(data_folder_path,"simulation_images_generation_JET")
+
     if REMOVE_BLACK == True:
         shutil.copytree(src_folder, blackremoval_folder_path, dirs_exist_ok=True)  #copy the complete folder to new folder (will create the new folder at same time)
     
@@ -99,9 +91,9 @@ def main():
                 img_path = os.path.join(simu_folder_path, img)
                 #print(img_path)
                 remove_black_area(img_path)
-    '''
+
     if CUT_75 == True:
-        csv_path = os.path.join(data_folder_path, "cut75ratio_image_size_stat.csv")
+        csv_path = os.path.join(data_folder_path, "cut75ratio_image_size_stat_JET.csv") #create csv file for saving results later
         #NOTE!!: if rerun, clean the csv, because we append the results
         with open(csv_path,"w",newline='') as csv_file:
             header = ['simulation_file','slice_image','original_image_width(noblack)','original_image_height(noblack)','cut_image_width','cut_image_height']
@@ -110,7 +102,7 @@ def main():
 
             #step 2: cut 75/128 from bottom of images (store images to new folder) - keep extra files for references
             #2a: create an empty folder named "simulation_images_generation_cut75"
-            cut75_folder_name = "simulation_images_generation_cut75"
+            cut75_folder_name = "simulation_images_generation_cut75_JET"
             cut75_folder_path = os.path.join(data_folder_path, cut75_folder_name) # new folder to store 75 cut images.
             print(cut75_folder_path)
             os.makedirs(cut75_folder_path, exist_ok=True)  # folder generation: create folder for each simulations inside separate images folders
@@ -141,5 +133,15 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    #crop_75_from_bottom(noblack_image_path, "tttest.png")
+
+    #no do resize now, will do it later when preprocessin for ML.
+    #cut_image = cv2.imread("noblack_cutimage_75ratio.png")
+    #resized_image = cv2.resize(cut_image, (128, 128), interpolation=cv2.INTER_CUBIC)
+    #cv2.imwrite("noblack_cutimage_resize128.png", resized_image)
+
+    #resizeback = cv2.resize(resized_image, (531,397)) #just test
+    #cv2.imwrite("noblack_resizeback.png", resizeback)
 
 
