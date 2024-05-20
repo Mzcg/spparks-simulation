@@ -16,7 +16,8 @@ import csv
 data_folder_path = r'D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306'
 dump_file_path_list = get_last_dump.get_last_dump_file(data_folder_path)
 
-image_generation_storage_folder_name = "simulation_images_generation"
+#image_generation_storage_folder_name = "simulation_images_generation"
+image_generation_storage_folder_name = "simulation_images_generation_JET"
 image_generation_storage_folder_path = os.path.join(data_folder_path, image_generation_storage_folder_name ) #set up path for creating a new folder to store images
 os.makedirs(image_generation_storage_folder_path, exist_ok= True)#creating a new folder to store images (will have subfolder inside later) #exist_oK: if folder exists, no action will be taken.
 #print(f"Folder '{image_generation_storage_folder_name}' has been created at '{data_folder_path}'")
@@ -43,8 +44,8 @@ for single_dump_file_path in dump_file_path_list:
     print(image_simu_folder_path)
     #step2: generate images within created folders
     #step 2a: generate full view 3D images
-    full_view_path = os.path.join(image_simu_folder_path,"full_view.png")
-    dump2image_slice.plot_3D_view(single_dump_file_path, output_filepath=full_view_path)
+    ## full_view_path = os.path.join(image_simu_folder_path,"full_view.png")
+    ## dump2image_slice.plot_3D_view(single_dump_file_path, output_filepath=full_view_path)
 
     #step 2b: generate xy, yz, xz
     output_slices_folder_path = os.getcwd()
