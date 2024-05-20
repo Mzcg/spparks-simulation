@@ -29,7 +29,8 @@ settings = {"figSize":(900,600),
 
 #filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\3D_AM_speed_3_mpWidth_69_haz_114_thickness_14_7.dump" #size 56  #slice dim: 14, 28, 42 ,56
 #filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\examples\am_path\pattern_repeat\3D_AM_speed_3_mpWidth_10_haz_40_thickness_5_234.dump" #size 128
-filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\clean_simulation_results_demo\speed_13_mpwidth_25_haz_56_thickness_5\3D_AM_speed_13_mpWidth_25_haz_56_thickness_5_9.dump" #temp test for Images_generation.py  #size 128
+#filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\clean_simulation_results_demo\speed_13_mpwidth_25_haz_56_thickness_5\3D_AM_speed_13_mpWidth_25_haz_56_thickness_5_9.dump" #temp test for Images_generation.py  #size 128
+filepath = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\clean_simulation_results_demo\speed_72_mpwidth_20_haz_40_thickness_11\3D_AM_speed_72_mpWidth_20_haz_40_thickness_11_4.dump" #temp test for Images_generation.py  #size 128
 
 
 def get_distance_snapshot(filepath,slice_distance, direction, output_filepath, slab=5 ):
@@ -47,7 +48,7 @@ def get_distance_snapshot(filepath,slice_distance, direction, output_filepath, s
 
     img = import_file(filepath)
     img.add_to_scene()
-    img.modifiers.append(ColorCodingModifier(property='Particle Type'))
+    img.modifiers.append(ColorCodingModifier(property='Particle Type', gradient = ColorCodingModifier.Jet() )) #use jet color coding
     img.modifiers.append(SliceModifier(normal=normal_plane_vector, distance=slice_distance, operate_on={'particles'}, slab_width=slab))
     vp = Viewport(camera_dir=camera_direction)  # camer_dir=(1,0,0) -> y<z^// (0,0,1)->x<y^ // (0,1,0)->x>z^
     # vp_slice1.type = Viewport.Type.Front  #Type options: Perspective, TOP, FRONT, ORTHO
@@ -87,7 +88,7 @@ def plot_3D_view(filepath, output_filepath):
     print("Remaining particle count:", output.particles.count) # Multiplication of size (e.g: 56 * 56 * 56 = 175616)
 
     pipeline.add_to_scene()
-    pipeline.modifiers.append(ColorCodingModifier(property='Particle Type'))
+    pipeline.modifiers.append(ColorCodingModifier(property='Particle Type', gradient = ColorCodingModifier.Jet() )) #use jet colormap
     viewport = Viewport(type = Viewport.Type.Perspective) #Type options: Perspective, TOP, FRONT, ORTHO
 
     ## View in 3D (Perspective) with manual setting direction
@@ -104,9 +105,10 @@ def plot_3D_view(filepath, output_filepath):
     print("full view done")
 
 def main():
+
     start_time = time.time()
     ## Call 3D full view generation function
-    #output_fp = os.path.join(os.getcwd(), "test_full_view.png") #test code
+    #output_fp = os.path.join(os.getcwd(), "test_full_view_jet.png") #test code
     #plot_3D_view(filepath, output_filepath=output_fp) #function call: generate 3D view ->output single 3D image
 
     ## Call Slices generation function
