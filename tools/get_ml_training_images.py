@@ -4,6 +4,8 @@
 # Stage 2: we will extract slices from two direction from one simulation (e.g. xy_64, xz_64) and save all to one separate folder using the simulation parameters as their names (e.g: speed_3_mpwidth_25_haz40_thickness_8_xy_64.png)
 # Stage 3: We may considre more directions and more slices, like xy_64 and xy_32 and xy_96 and also xz_64.... the filename is based on these settings.
 # The output of this program is a folders with extracted data inside.
+
+
 import os
 import shutil
 import cv2
@@ -71,9 +73,9 @@ def getting_images_xy64_xz64():
     #simulation_folder_path = os.path.join(parent_folder, "simulation_cut75_demo") #demo path for testing the code
 
     parent_folder = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306"
-    simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75_JET")
+    simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75")
 
-    target_folder_xy64_xz64 = os.path.join(parent_folder,"simulation_images_generation_cut75_JET_xy64_xz64_resize") #create new folder name and path
+    target_folder_xy64_xz64 = os.path.join(parent_folder,"simulation_images_generation_cut75_xy64_xz64_resize") #create new folder name and path
 
     if not os.path.exists(target_folder_xy64_xz64):
         os.makedirs(target_folder_xy64_xz64)
@@ -111,14 +113,15 @@ def getting_images_multiDirection_multiDistance():
 
         """
     # Demo Simulation Data Folder (for code testing)
-    #parent_folder = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools" #demo path for testing the code
-    #simulation_folder_path = os.path.join(parent_folder, "simulation_cut75_demo") #demo path for testing the code
+    parent_folder = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools" #demo path for testing the code
+    simulation_folder_path = os.path.join(parent_folder, "simulation_cut75_demo") #demo path for testing the code
 
     # Real Simulation Data Folder
-    parent_folder = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306"
-    simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75_JET")
+    #parent_folder = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306"
+    #simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75")
+    #simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75_JET")
 
-    target_folder_multiDir_multiDist = os.path.join(parent_folder,"simulation_images_generation_cut75_JET_multiDirection_multiDistance_resize") #create new folder name and path
+    target_folder_multiDir_multiDist = os.path.join(parent_folder,"simulation_images_generation_cut75_multiDirection_multiDistance_resize") #create new folder name and path
 
     if not os.path.exists(target_folder_multiDir_multiDist):
         os.makedirs(target_folder_multiDir_multiDist)
@@ -142,18 +145,173 @@ def getting_images_multiDirection_multiDistance():
 
                 #save resize image to new folder
                 cv2.imwrite(destination_img_path, resized_img)
+def getting_images_multiDirection_multiDistance_0_32_64():
+    """
+        This function will extract images with multiple directions (xy, xz, yz) and multiple distances (32, 64, 0) that
+                                already being processed from original simulation and resize and write it to new folder.
+        Algorithm:
+        1. Getting original image folder path
+        2. Set up new folder name for saving extracted images and then create the new folder if it doesn't exist.
+        3. Iterate simulation folders and iterate images. find the wanted ones
+            (xy_32, xy_64, xy_0, xz_32, xz_64, xz_0, yz_32, yz_64, yz_0)
+        4. Read in image and resize to 256 * 256 pixels
+        5. create new name for the image which used for saving in the new folder (new folder require image to have parameters in the filename)
+        6. Write image with its new name to the new folder
+
+        """
+    # Demo Simulation Data Folder (for code testing)
+    #parent_folder = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools" #demo path for testing the code
+    #simulation_folder_path = os.path.join(parent_folder, "simulation_cut75_demo") #demo path for testing the code
+
+    # Real Simulation Data Folder
+    parent_folder = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306"
+    #simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75")
+    simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75_JET")
+
+    #target_folder_multiDir_multiDist = os.path.join(parent_folder,"simulation_images_generation_cut75_multiDirection_multiDistance_0_32_64_resize") #create new folder name and path
+    target_folder_multiDir_multiDist = os.path.join(parent_folder,"simulation_images_generation_cut75_JET_multiDirection_multiDistance_0_32_64_resize") #create new folder name and path
+
+    if not os.path.exists(target_folder_multiDir_multiDist):
+        os.makedirs(target_folder_multiDir_multiDist)
+    for simu_folder in os.listdir(simulation_folder_path):
+        simulation_name = simu_folder #getting the simulation name string
+        simu_folder_path = os.path.join(simulation_folder_path, simu_folder)
+        for img in os.listdir(simu_folder_path):
+            image_prefix_list = ["xy_32", "xy_64", "xy_0", "xz_32", "xz_64", "xz_0", "yz_32", "yz_64", "yz_0"]
+            #if img.startswith("xy_64") or img.startswith("xz_64"):
+            if any(img.startswith(pf) for pf in image_prefix_list):
+                #resize image to 256 * 256
+                img_path = os.path.join(simu_folder_path, img)  #getting wanted image (xy_64)
+                org_img = cv2.imread(img_path)
+                resized_img = cv2.resize(org_img, (256, 256)) #resize image to 256 * 256
+
+                #rename the image to new name for storing in different folder
+                image_direction = img.split("_")[0] #getting direction string（xy or xz)
+                image_distance = img.split("_")[1]  #getting teh distance (64, 32 or 96 dep)
+                img_rename = simulation_name+"_direction_"+image_direction+"_distance_"+image_distance+".png" #e.g: speed_3_mpwidth_10_haz_48_thickness_11_direction_xy_distance_64.png
+                destination_img_path = os.path.join(target_folder_multiDir_multiDist, img_rename) #create the whole path for saving
+
+                #save resize image to new folder
+                cv2.imwrite(destination_img_path, resized_img)
+
+def getting_images_xy0_xy32_xy64():
+    """
+        This function will extract images with multiple directions (xy, xz, yz) and multiple distances (32, 64, 96) that
+                                already being processed from original simulation and resize and write it to new folder.
+        Algorithm:
+        1. Getting original image folder path
+        2. Set up new folder name for saving extracted images and then create the new folder if it doesn't exist.
+        3. Iterate simulation folders and iterate images. find the wanted ones
+            (xy_0, xy_32, xy_64)
+        4. Read in image and resize to 256 * 256 pixels
+        5. create new name for the image which used for saving in the new folder (new folder require image to have parameters in the filename)
+        6. Write image with its new name to the new folder
+
+        """
+    # Demo Simulation Data Folder (for code testing)
+    #parent_folder = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools" #demo path for testing the code
+    #simulation_folder_path = os.path.join(parent_folder, "simulation_cut75_demo") #demo path for testing the code
+
+    # Real Simulation Data Folder
+    parent_folder = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306"
+    #simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75")
+    simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75_JET")
+
+    #target_folder_multiDir_multiDist = os.path.join(parent_folder,"simulation_images_generation_cut75_xy0_xy32_xy64_resize") #create new folder name and path
+    target_folder_multiDir_multiDist = os.path.join(parent_folder,"simulation_images_generation_cut75_JET_xy0_xy32_xy64_resize") #create new folder name and path
+
+    if not os.path.exists(target_folder_multiDir_multiDist):
+        os.makedirs(target_folder_multiDir_multiDist)
+    for simu_folder in os.listdir(simulation_folder_path):
+        simulation_name = simu_folder #getting the simulation name string
+        simu_folder_path = os.path.join(simulation_folder_path, simu_folder)
+        for img in os.listdir(simu_folder_path):
+            image_prefix_list = ["xy_0","xy_32", "xy_64"]
+            #if img.startswith("xy_64") or img.startswith("xz_64"):
+            if any(img.startswith(pf) for pf in image_prefix_list):
+                #resize image to 256 * 256
+                img_path = os.path.join(simu_folder_path, img)  #getting wanted image (xy_64)
+                org_img = cv2.imread(img_path)
+                resized_img = cv2.resize(org_img, (256, 256)) #resize image to 256 * 256
+
+                #rename the image to new name for storing in different folder
+                image_direction = img.split("_")[0] #getting direction string（xy or xz)
+                image_distance = img.split("_")[1]  #getting teh distance (64, 32 or 96 dep)
+                img_rename = simulation_name+"_direction_"+image_direction+"_distance_"+image_distance+".png" #e.g: speed_3_mpwidth_10_haz_48_thickness_11_direction_xy_distance_64.png
+                destination_img_path = os.path.join(target_folder_multiDir_multiDist, img_rename) #create the whole path for saving
+
+                #save resize image to new folder
+                cv2.imwrite(destination_img_path, resized_img)
+
+def getting_images_xy0_32_64_xz0_32_64():
+    """
+        This function will extract images with multiple directions (xy, xz) and multiple distances (0, 32, 64) that
+                                already being processed from original simulation and resize and write it to new folder.
+        Algorithm:
+        1. Getting original image folder path
+        2. Set up new folder name for saving extracted images and then create the new folder if it doesn't exist.
+        3. Iterate simulation folders and iterate images. find the wanted ones
+            (xy_0, xy_32, xy_64, xz_0, xz_32, xz_64)
+        4. Read in image and resize to 256 * 256 pixels
+        5. create new name for the image which used for saving in the new folder (new folder require image to have parameters in the filename)
+        6. Write image with its new name to the new folder
+
+        """
+    # Demo Simulation Data Folder (for code testing)
+    #parent_folder = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools" #demo path for testing the code
+    #simulation_folder_path = os.path.join(parent_folder, "simulation_cut75_demo") #demo path for testing the code
+
+    # Real Simulation Data Folder
+    parent_folder = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306"
+    #simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75")
+    simulation_folder_path = os.path.join(parent_folder, "simulation_images_generation_cut75_JET")
+
+    #target_folder_multiDir_multiDist = os.path.join(parent_folder,"simulation_images_generation_cut75_xy0_32_64_xz0_32_64_resize") #create new folder name and path
+    target_folder_multiDir_multiDist = os.path.join(parent_folder,"simulation_images_generation_cut75_JET_xy0_32_64_xz0_32_64_resize") #create new folder name and path
+
+    if not os.path.exists(target_folder_multiDir_multiDist):
+        os.makedirs(target_folder_multiDir_multiDist)
+    for simu_folder in os.listdir(simulation_folder_path):
+        simulation_name = simu_folder #getting the simulation name string
+        simu_folder_path = os.path.join(simulation_folder_path, simu_folder)
+        for img in os.listdir(simu_folder_path):
+            image_prefix_list = ["xy_0","xy_32", "xy_64", "xz_0","xz_32", "xz_64"]
+            #if img.startswith("xy_64") or img.startswith("xz_64"):
+            if any(img.startswith(pf) for pf in image_prefix_list):
+                #resize image to 256 * 256
+                img_path = os.path.join(simu_folder_path, img)  #getting wanted image (xy_64)
+                org_img = cv2.imread(img_path)
+                resized_img = cv2.resize(org_img, (256, 256)) #resize image to 256 * 256
+
+                #rename the image to new name for storing in different folder
+                image_direction = img.split("_")[0] #getting direction string（xy or xz)
+                image_distance = img.split("_")[1]  #getting teh distance (64, 32 or 96 dep)
+                img_rename = simulation_name+"_direction_"+image_direction+"_distance_"+image_distance+".png" #e.g: speed_3_mpwidth_10_haz_48_thickness_11_direction_xy_distance_64.png
+                destination_img_path = os.path.join(target_folder_multiDir_multiDist, img_rename) #create the whole path for saving
+
+                #save resize image to new folder
+                cv2.imwrite(destination_img_path, resized_img)
 
 def main():
     stage1 = False  #getting xy_64 only data from all simualation (1 direction, 1 slice distance-64)
     stage2 = False #getting xy_64 and xz_64 from all simulations (2 or more directions (currently focus on xy and xz, 1 slice_distance-64)
-    stage3 = True #getting multiple directions and multiple distances
+    stage3 = False #getting multiple directions and multiple distances
+    other_test_xy0_32_64 = True
+    other_test_xy0_32_64_xz0_32_64 = True
+    other_test_multi_xy_xz_yz_0_32_64 = False
 
     if stage1 == True:
         getting_images_xy64only()
     if stage2 == True:
         getting_images_xy64_xz64()
     if stage3 == True:
-        getting_images_multiDirection_multiDistance()
+        getting_images_multiDirection_multiDistance() #xy, xz, yz, 32, 64, 98
+    if other_test_xy0_32_64 == True:  #total image: 1568 * 3 = 4704
+        getting_images_xy0_xy32_xy64()
+    if other_test_xy0_32_64_xz0_32_64 == True:  #total image: 1568 * 6 = 9408
+        getting_images_xy0_32_64_xz0_32_64()
+    if other_test_multi_xy_xz_yz_0_32_64 ==True:
+        getting_images_multiDirection_multiDistance_0_32_64()  #total imagesL 1568 * 9 = 14112
 
 if __name__ == "__main__":
     main()

@@ -37,12 +37,15 @@ def convert_png_to_npy(parent_folder_path, image_data_foldername):
 
 
 def main():
-    conversion_command = False
-    single_npy_visualization_and_save = True
+    conversion_command = True
+    single_npy_visualization_and_save = False
 
     if conversion_command:
         parent_folder= r'D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306'
-        data_folder_input = "simulation_images_generation_cut75_JET_xy64only_resize"
+        #data_folder_input = "simulation_images_generation_cut75_JET_xy64only_resize" #JET xy_64 only folder
+        #data_folder_input = "simulation_images_generation_cut75_JET_xy64_xz64_resize" #JET xy_64 and xz_64 folder
+        data_folder_input = "simulation_images_generation_cut75_JET_multiDirection_multiDistance_resize" #JET multi directions (xy, xz, yz) and distances (32,64,96) folder
+
         convert_png_to_npy(parent_folder, data_folder_input) #generate new folder and convert png files to npy and save to new folder
 
 

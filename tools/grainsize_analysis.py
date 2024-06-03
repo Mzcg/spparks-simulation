@@ -55,6 +55,16 @@ if __name__ == "__main__":
 
     ##single test
     #testimage = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306\simulation_images_parameter_analysis\speed_42_mpwidth_30_haz_65_thickness_8\xy_64_cut75.png"
-    testimage = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306\simulation_images_generation_cut75_JET\speed_13_mpwidth_20_haz_82_thickness_8\xy_96_cut75.png"
+    #testimage = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306\simulation_images_generation_cut75_JET\speed_42_mpwidth_25_haz_40_thickness_5\xy_64_cut75.png"
+
+    #Ovito Default color
+    #testimage = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306\simulation_images_parameter_analysis_parameterClassification_resize_2colorTypes\HAZ\speed_42_mpwidth_15_haz_65_thickness_8_xy_64_cut75.png"
+    #Jet
+    #testimage = r"D:\Zhaochen\simulation_SPPARKS_hpc\SPPARKS_scripts_generation_128_20240306\simulation_images_parameter_analysis_parameterClassification_resize_2colorTypes\Speed\speed_3_mpwidth_25_haz_40_thickness_8_direction_xz_distance_64.png"
+    #testimage = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\500 epochs_training_SSIM_on_tensorboard_single.png"
+    #testimage = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\color_jitter_sharpen_smooth.PNG"
+    testimage = r"C:\Users\zg0017\PycharmProjects\spparks-simulation\tools\median_filter_single.png"
+
+
     hist, bins, bin_min, bin_max, avg_grain_size, num_regions, sum_grain_size, labeled_image, regions_list = calculate_sinlge_image_grainsize_with_resize(testimage)
     print("grain size: ", avg_grain_size)
