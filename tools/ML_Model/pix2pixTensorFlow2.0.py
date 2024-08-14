@@ -26,22 +26,22 @@ import shutil
 import pandas as pd
 
 try:
-    from tools.ML_Model.cfg import cfg
-    #import cfg
+    #from tools.ML_Model.cfg import cfg
+    import cfg
     from utilities import util
 
 except:
     print("Unable to find the cfg or utilities package!!! trying to now alter the system path !!")
     sys.path.insert(0, os.path.abspath('..'))
     sys.path.insert(0, os.path.dirname(r'../../'))
-    sys.path.insert(0, os.path.dirname(r'../utilities'))
-    import tools.ML_Model.cfg
-    #import cfg
+    sys.path.insert(0, os.path.dirname(r'utilities'))
+    #import tools.ML_Model.cfg
+    import cfg
     from utilities import util
 
 timeStamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-#logFilename = f"../tmp/pix2pixTensorFlow2.0_{timeStamp}.log"
-logFilename = f"/tmp/pix2pixTensorFlow2.0_{timeStamp}.log"
+logFilename = f"../tmp/pix2pixTensorFlow2.0_{timeStamp}.log"
+
 saveImagesToDisk = True  ### set it for true if you want inference images are to be saved on disk
 logging.basicConfig(filename=logFilename, level=logging.INFO,
                     format='%(asctime)-15s  %(levelname)-5s  %(message)-20s')

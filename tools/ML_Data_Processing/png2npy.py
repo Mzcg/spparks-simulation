@@ -28,8 +28,9 @@ def convertPngToNpy(png_folder, npy_save_folder):
 
 # Example usage
 data_parent_folder = r'E:\Data\data_augmentation_all'
-
 experiment_set = "data_augmentation_xy_0_32_64"
+
+
 experiment_set_path = os.path.join(data_parent_folder, experiment_set)
 for effect_folder in os.listdir(experiment_set_path):
     effect_folder_path = os.path.join(experiment_set_path, effect_folder)
@@ -43,8 +44,9 @@ for effect_folder in os.listdir(experiment_set_path):
 
     convertPngToNpy(png_folder, npy_save_folderpath)
 
+#if you have a single folder including all the images, use just the following code:
+#png_folder = r"D:\Zhaochen\ML_training_data_without_augmentation\original_xy_xz_64"
+#npy_save_folderpath = r"D:\Zhaochen\ML_training_data_without_augmentation\NPY_original_xy_xz_64"
+#convertPngToNpy(png_folder, npy_save_folderpath)
 
-#png_folder = r'D:\Aishwarya\grainStructure\dataV3\simulation_images_generation_cut75_multiDirection_multiDistance_resize'
-#npy_save_folder = r'D:\Aishwarya\grainStructure\dataV3\NPY_simulation_images_generation_cut75_multiDirection_multiDistance_resize'
 
-#convertPngToNpy(png_folder, npy_save_folder)

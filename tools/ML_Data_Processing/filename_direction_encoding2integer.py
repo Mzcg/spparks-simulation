@@ -41,4 +41,14 @@ for dataset_case_name in os.listdir(data_augmentation_all_folder_path): #loop th
 
             os.rename(image_file_path, new_imagename_path)  #change the generated file name in the folder (no way back)
 
-
+#if have a folder contains the image file directly, can use the following sectional code only (just copy from partial code above)
+# effect_type_path = r"D:\Zhaochen\ML_training_data_without_augmentation\original_xy_xz_64"
+#
+# for image_file_name in os.listdir(effect_type_path):
+#     image_file_path = os.path.join(effect_type_path, image_file_name)
+#     #change file name here (just file name)
+#     #direction_option = image_file_name.split("_")[9] #get the direction code (xy, xz, yz)
+#     #if direction_option == "xy":
+#     new_imagename_path = filename_direction_conversion(image_file_path)
+#
+#     os.rename(image_file_path, new_imagename_path)  #change the generated file name in the folder (no way back)

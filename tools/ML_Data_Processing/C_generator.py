@@ -5,12 +5,11 @@ import glob
 import numpy as np
 import re
 parent_folder = r"E:\Data\data_augmentation_all\data_augmentation_xy_0_32_64"
-
-
 effect_name = "original" #select the effects to work on
 npy_folder_name = "NPY_"+effect_name
-#npy_folder = r"E:\Data\data_augmentation_all\data_augmentation_xy_0_32_64\NPY_original"
 npy_folder = os.path.join(parent_folder,npy_folder_name) #e.g: E:\Data\data_augmentation_all\data_augmentation_xy_0_32_64\NPY_original
+
+#npy_folder = r"D:\Zhaochen\ML_training_data_without_augmentation\NPY_original_xy_xz_64"
 
 folderA = "A"
 folderB = "B"
@@ -18,6 +17,8 @@ folderC = "C"
 
 processed_data_folder_name = "Processed_" + effect_name #e.g: Processed_original -> store all the processed data
 processed_data_folder_path = os.path.join(parent_folder, processed_data_folder_name)
+
+#processed_data_folder_path = "D:\Zhaochen\ML_training_data_without_augmentation\Procssed_original_xy_xz_64" #if doing single effect, create the folder manually
 
 #output_directory_A = r"D:\Aishwarya\grainStructure\dataV2\A"
 output_directory_A = os.path.join(processed_data_folder_path, folderA)
@@ -46,6 +47,14 @@ normalization_params_all_materials = {
                 'layerThickness': 11.0,
                 'distance': 64,
             },
+    "grainStructureXY_XZ_64":
+                {
+                'speed': 72.0,
+                'meltpool_width': 40.0,
+                'haz': 91.0,
+                'layerThickness': 11.0,
+                'direction': 3,
+            },
     "grainStructure_multi_direction_multi_distance":
                 {
                 'speed': 72.0,
@@ -59,7 +68,7 @@ normalization_params_all_materials = {
 
 }
 
-normalization_params = normalization_params_all_materials["grainStructureXY_0_32_64"]
+normalization_params = normalization_params_all_materials["grainStructureXY_XZ_64"] #modify here
 
 imDatasetMathType = "logarithmic" # choices = "nonLogarithmic" or "logarithmic"
 

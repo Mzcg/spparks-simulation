@@ -79,10 +79,11 @@ elif "CENG-FWDKXP3" in platform.node(): #### Mani GPU PC after windows upgrade t
     mlCodeDevptInputPath = r'C:\Users\vk0237\mloutputs\codeDepvt'
 
 elif "PC7YSV2Q3-CAAM" in platform.node(): #### Zhaochen's PC (big) before upgrading May, 2024
-    dataRootDir = r'D:\Zhaochen\ML_training_data_augmentation\splittedData'
-    mlOutputRootDir = r'D:\Zhaochen\ML_training_data_augmentation\mloutputs'
+    #dataRootDir = r'D:\Zhaochen\ML_training_data_without_augmentation\Procssed_original_xy_xz_64\splittedData_original_xy_xz_64'
+    dataRootDir = r'D:\Zhaochen\ML_training_data_augmentation\splittedData_demo'
+    mlOutputRootDir = r'D:\Zhaochen\ML_training_data_without_augmentation\ML_running_files\mloutputs'
     #C:\Users\zg0017\PycharmProjects\spparks - simulation\tools\ML_Model\mloutputs
-    mlCodeDevptInputPath = r'D:\Zhaochen\ML_training_data_augmentation\mloutputs\codeDepvt'
+    mlCodeDevptInputPath = r'D:\Zhaochen\ML_training_data_without_augmentation\ML_running_files\mloutputs\codeDepvt'
 
 
 else:

@@ -5,13 +5,16 @@ import random
 import shutil
 
 
-data_parent_folder= r"E:\Data\data_augmentation_all\data_augmentation_xy_0_32_64" #xy_0_32_64 dataset
+#data_parent_folder= r"E:\Data\data_augmentation_all\data_augmentation_xy_0_32_64" #xy_0_32_64 dataset
+data_parent_folder= r"D:\Zhaochen\ML_training_data_without_augmentation\Procssed_original_xy_xz_64" #xy_xz_64 dataset
+
 #dataset_folder_name = "merged_data_xy_0_32_46"  # case1: all 5 effects, total images 5 * 4704 = 23520 images
-dataset_folder_name = "merged_data_3effects_xy_0_32_46"  # case 2:  3-effects, total images 3* 4704 = 14112 images
+#dataset_folder_name = "merged_data_3effects_xy_0_32_46"  # case 2:  3-effects, total images 3* 4704 = 14112 images
+dataset_folder_name = "stitchedImages"  # test case: just want original data without any effects
 
 source_folder = os.path.join(data_parent_folder, dataset_folder_name) # Source folder path
 #destination_folder = os.path.join(data_parent_folder, "splittedData")  # case 1: Destination folder path (for all 5 effects)
-destination_folder = os.path.join(data_parent_folder, "splittedData_3effects")  # case 2: Destination folder path (for only 3 effects)
+destination_folder = os.path.join(data_parent_folder, "splittedData_original_xy_xz_64")  # case 2: Destination folder path (for only 3 effects)
 
 # Create output folder based on the provided destination_folder path
 os.makedirs(destination_folder, exist_ok=True) #create the splittedData folder

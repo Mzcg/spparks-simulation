@@ -10,6 +10,7 @@ from skimage import filters, measure
 
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
+from matplotlib.ticker import FuncFormatter
 
 
 def visualize_segment_process(image1, image2, image3, image4, image5, image6):
@@ -70,7 +71,7 @@ def visualize_segment_process(image1, image2, image3, image4, image5, image6):
 #def grain_segmentation(image, gaussian_radius=0.8, sobel_threshold=0.008, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True, show_intermediate_segmentation=False, histogram_plot_default=True, draw_histogram=False):
 #def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.02, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True, show_intermediate_segmentation=False, histogram_plot_default=True, draw_histogram=False):
 #def grain_segmentation(image, gaussian_radius=0.5, sobel_threshold=0.003, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True, show_intermediate_segmentation=False, histogram_plot_default=True, draw_histogram=False):
-def grain_segmentation(image, gaussian_radius=0.5, sobel_threshold=0.002, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True, show_intermediate_segmentation=False, histogram_plot_default=True, draw_histogram=False):
+def grain_segmentation(image, gaussian_radius=0.5, sobel_threshold=0.002, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True, show_intermediate_segmentation=True, histogram_plot_default=True, draw_histogram=True):
 
 #def grain_segmentation(image, gaussian_radius=1, sobel_threshold=0.006, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True, show_intermediate_segmentation=False, histogram_plot_default=True, draw_histogram=False):
 #def grain_segmentation(image, gaussian_radius=0.5, sobel_threshold=0.006, dilation_iterations=1,bin_min=0, bin_max=300, n_bins=15, plot_numbers_on_grains=True, show_intermediate_segmentation=False, histogram_plot_default=True, draw_histogram=False): #use for JET
@@ -218,7 +219,17 @@ def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max, histogram_p
         n, bin_edges, = np.histogram(grain_region_size_list, bins=bin_num, density=True) #density: use normalized y-value if true.
 
         if draw_histogram == True:
-            plt.bar(bin_edges[:-1], n, width=np.diff(bin_edges), color='blue', edgecolor='black', alpha=0.7)  # Plot the histogram using plt.bar
+            plt.figure(figsize=(20,10))
+            plt.bar(bin_edges[:-1], n, width=np.diff(bin_edges), color='blue', edgecolor='black', alpha=0.7 )  # Plot the histogram using plt.bar
+
+
+            # Custom formatter function to convert to percentage and scientific notation
+            #def percentage_formatter(x, pos):
+            #    return f'{x:.2e}'
+
+            # Set custom formatter for y-axis tick labels
+            #plt.gca().yaxis.set_major_formatter(FuncFormatter(percentage_formatter))
+
 
             ### Option: if want to label the bar, uncomment below
             #bars = plt.bar(bin_edges[:-1], n, width=np.diff(bins), color='blue', edgecolor='black', alpha=0.7) # Plot the histogram using plt.bar
@@ -227,11 +238,19 @@ def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max, histogram_p
             ### Option: plot lines connected bars, uncomment below
             #plt.plot(bin_edges[:-1],n, color = 'orange') #plot the lines above the bar
 
-            plt.xlabel("Grain Size (pixels)")
-            plt.ylabel("Number of Grain Regions")
-            plt.title("Grain Size Distribution of " + file_name)
-            # plt.savefig(r"../../../tmp/Grain Size Distribution of " + file_name+ ".png")
+            plt.xlabel("Grain Size (pixels)", fontsize=35)
+            plt.ylabel("Number of Grain Regions", fontsize=33)
+            ##plt.title("Grain Size Distribution of " + file_name) #comment out if needed
+            plt.title("Grain Size Distribution", fontsize=35) #comment out if needed
+            #plt.savefig(r"../../../tmp/Grain Size Distribution of " + file_name+ ".png")
+
+
+            #plt.tick_params(axis='both', labelsize=32)  # Adjust both x and y ticks
+            plt.xticks(fontsize=35)
+            plt.yticks(fontsize=32)
+            plt.savefig(r"C:\Users\zg0017\Documents\Spring 2024\Microstructure-Paper-Writing\manuscripts\2nd_round_modification\\" + "1.png")
             plt.show()
+
     else: #if histogram_plot_default = False, plot with MANUAL setting values (bin_min, bin_max)
         n, bin_edges, = np.histogram(grain_region_size_list, bins=bin_num,
                                 range=(bin_min, bin_max),
@@ -239,9 +258,12 @@ def get_histogram(grain_region_size_list, bin_num, bin_min, bin_max, histogram_p
 
         if draw_histogram == True:
             plt.bar(bin_edges[:-1], n, width=np.diff(bin_edges), color='blue', edgecolor='black', alpha=0.7)  # Plot the histogram using plt.bar
-            plt.xlabel("Grain Size (pixels)")
-            plt.ylabel("Number of Grain Regions")
-            plt.title("Grain Size Distribution of " + file_name)
+            plt.xlabel("Grain Size (pixels)", fontsize=18)
+            plt.ylabel("Number of Grain Regions", fontsize=18)
+            ##plt.title("Grain Size Distribution of " + file_name) #comment out if needed
+            plt.title("Grain Size Distribution")  # comment out if needed
+            # Change the tick label sizes
+            plt.tick_params(axis='both', labelsize=16)  # Adjust both x and y ticks
             # plt.savefig(r"../../../tmp/Grain Size Distribution of " + file_name+ ".png")
             plt.show()
 
@@ -313,7 +335,7 @@ def compare_images(image_np1, image_np2, gaussian_radius=1, sobel_threshold=0.01
 if __name__ == "__main__":
 
     show_intermediate_segmentation = False  #if want to display the six images of intermediate steps of grain segmentation, set to True
-    draw_histogram = False  #if want to display the visualization of grain size distribution histogram, set it true.
+    draw_histogram = True  #if want to display the visualization of grain size distribution histogram, set it true.
     histogram_plot_default = True # Choose want to use manual setting (bin_min,max) to plot or not. True: auto plot with default values False: use following manual setting to plot.
 
 
@@ -324,11 +346,18 @@ if __name__ == "__main__":
     dilation_iterations = 1
     bin_min = 0
     bin_max = 10000
-    n_bins = 100
+    #bin_max = 5000 #test
+    #n_bins = 100
+    n_bins = 30 #test
     plot_numbers_on_grains = False
 
 
-    image_folder_path = r'../data/test_data'
+    #image_folder_path = r'../data/test_data'
+    #image_folder_path = r'../data/data_13_15_74_7'
+    #image_folder_path = r'../data/data_42_30_65_8'
+    #image_folder_path = r'../data/data_52_10_40_11'
+    image_folder_path = r'../data/data_63_30_40_7'
+    #image_folder_path = r'../data/data_63_35_82_7'
 
     file_list = os.listdir(image_folder_path)
 

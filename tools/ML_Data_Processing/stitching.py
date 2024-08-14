@@ -39,10 +39,8 @@ def stitchImages(im0, im2, mode='horizontal'):
         raise ValueError(f"The shapes of the images {im0.shape} {im2.shape} are not matching !!")
 
 
-# Define folders containing the PNG images
-#folder1_path = r"D:\Aishwarya\grainStructure\dataV2_for_code_cleaning\fodlertoHELPCode Fainalization\random_data\source_png"
-#folder2_path = r"D:\Aishwarya\grainStructure\dataV2_for_code_cleaning\simulation_images_generation_cut75_xy64only_resize"
 
+'''
 parent_folder = r"E:\Data\data_augmentation_all\data_augmentation_xy_0_32_64"
 
 effect_list = ["original", "jet", "gray_contrast", "median_blur_filter", "horizontal_flip"]
@@ -66,12 +64,7 @@ for effect_name in effect_list:
     ######### USE ONLY FOR 1ST RUN ####################
     #sourcePng_folder_path = os.path.join(processed_folder_path, sourcePng_folder_name) #USE THIS FOR 1ST effect RUN, comment out in other effects since we have source_png in fixed location
 
-    ########################################################################
-
-    ######### USE THE FOLLOWING ADDRESS AFTER FIRST RUN ####################
-    #COMMENT OUT THE FOLLOWING TWO LINES IN FIRST RUN, USE IT AFTERWARDS
-
-    ########################################################################
+    
 
     folder1_path = sourcePng_folder_path #get parameter color image as left side for pairing
     folder2_path = os.path.join(parent_folder, effect_name) #get image (target) as right side for pairing
@@ -101,5 +94,34 @@ for effect_name in effect_list:
                 combined_image_path = os.path.join(output_folder, filename1)
                 Image.fromarray(combined_image.astype(np.uint8)).save(combined_image_path)
                 print(f"Combined image saved: {combined_image_path}")
+'''
+# Define folders containing the PNG images
+folder1_path = r"D:\Zhaochen\ML_training_data_without_augmentation\Procssed_original_xy_xz_64\random_data\source_png"
+folder2_path = r"D:\Zhaochen\ML_training_data_without_augmentation\original_xy_xz_64"
 
+# If have left and right side folder path directly, using the following code:
+# Define output folder
+output_folder = "D:\Zhaochen\ML_training_data_without_augmentation\Procssed_original_xy_xz_64\stitchedImages"
+#output_folder = os.path.join(processed_folder_path, "stitchedImages")
+
+# Create output folder if it doesn't exist
+os.makedirs(output_folder, exist_ok=True)
+
+# Iterate over files in both folders and stitch corresponding images
+for filename1 in os.listdir(folder1_path):
+    if filename1.endswith('.png'):
+        # Check if there's a corresponding file in folder2
+        corresponding_file_path = os.path.join(folder2_path, filename1)
+        if os.path.exists(corresponding_file_path):
+            # Load images from both folders
+            img1 = np.array(Image.open(os.path.join(folder1_path, filename1)))
+            img2 = np.array(Image.open(corresponding_file_path))
+
+            # Stitch the images horizontally
+            combined_image = stitchImages(img1, img2, mode='horizontal')
+
+            # Save the combined image
+            combined_image_path = os.path.join(output_folder, filename1)
+            Image.fromarray(combined_image.astype(np.uint8)).save(combined_image_path)
+            print(f"Combined image saved: {combined_image_path}")
 print("Stitching completed!")

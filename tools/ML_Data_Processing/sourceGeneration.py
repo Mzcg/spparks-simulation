@@ -6,11 +6,11 @@ from PIL import Image
 # Define the main directory path
 
 
-parent_folder = r"E:\Data\data_augmentation_all\data_augmentation_xy_0_32_64"
-effect_name = "original" #select the effects to work on
-processed_folder_name = "Processed_"+effect_name
-processed_folder_path = os.path.join(parent_folder, processed_folder_name)
-
+# parent_folder = r"E:\Data\data_augmentation_all\data_augmentation_xy_0_32_64"
+# effect_name = "original" #select the effects to work on
+# processed_folder_name = "Processed_"+effect_name
+# processed_folder_path = os.path.join(parent_folder, processed_folder_name)
+processed_folder_path = r"D:\Zhaochen\ML_training_data_without_augmentation\Procssed_original_xy_xz_64"
 main_dir = processed_folder_path
 C_folder_path = os.path.join(processed_folder_path,"C")
 #main_dir = r'D:\Aishwarya\grainStructure\dataV2\fodlertoHELPCode Fainalization'
